@@ -1,0 +1,24 @@
+@import "./tokens";
+@import "./font-face";
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // user-select: none;
+}
+
+body {
+  overflow: hidden;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  margin: 0;
+  background-color: var(--base-clr);
+}
+
+hr {
+  margin: 16px 0;
+}
