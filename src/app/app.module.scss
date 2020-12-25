@@ -1,14 +1,34 @@
 .app {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
+  div {
+    overflow: visible;
+  }
 }
 
-.preview {
-  width: 100%;
-  height: 100%;
-  border: 1px solid;
-  display: flex;
-  align-items: center;
+///////////////////////////////
+///////////////////////////////
+///////////////////////////////
+
+.SVG {
+  &_wrapper {
+    overflow: visible;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  &_container {
+    pointer-events: none;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    fill: none;
+  }
+  &_controls {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
 }
