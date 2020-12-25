@@ -38,7 +38,7 @@ const App = ({}) => {
   });
   const [newSVG, setNewSVG] = React.useState(null);
   const [controlElements, setControlElements] = React.useState([]);
-  const [complexity, setComplexity] = React.useState(1);
+  const [complexity, setComplexity] = React.useState(2);
   const [resetState, setReset] = React.useState(false);
 
   ////////////////////////////////////////////////////////////////
@@ -73,8 +73,8 @@ const App = ({}) => {
             height: SVGData.height.baseVal.value
           },
           newSize: {
-            width: newSVGSize.width,
-            height: newSVGSize.height
+            width: SVGData.width.baseVal.value,
+            height: SVGData.height.baseVal.value
           }
         });
 
