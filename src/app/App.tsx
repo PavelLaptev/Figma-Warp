@@ -6,8 +6,20 @@ import {
 } from "../libs/react-zoom-pan-pinch";
 import { getRatioSize, createPointsArray } from "../utils";
 import Warp from "warpjs";
+import ControlPointEl from "./components/ControlPointEl";
 
-const initWarp = (SVG, complexity) => {
+const drawControlElements = pointsArray => {
+  return pointsArray.map((item, i) => {
+    return (
+      <ControlPointEl
+        key={`point-${i}`}
+        position={{ x: item[0], y: item[1] }}
+      />
+    );
+  });
+};
+
+const initWarp = (SVG, complexity, setState) => {
   if (SVG) {
     const warp = new Warp(SVG);
     warp.interpolate(4);
@@ -18,7 +30,8 @@ const initWarp = (SVG, complexity) => {
       Number(complexity)
     );
 
-    console.log(pointsPosition);
+    // console.log(pointsPosition);
+    setState(drawControlElements(pointsPosition));
 
     return new XMLSerializer().serializeToString(warp.element);
   }
@@ -48,7 +61,8 @@ const App = ({}) => {
       height: 0 as number
     }
   });
-  const [complexity, setComplexity] = React.useState(1);
+  const [controlElements, setControlElements] = React.useState([]);
+  const [complexity, setComplexity] = React.useState(2);
 
   ////////////////////////////////////////////////////////////////
   ////////////////////////// USE EFFECT //////////////////////////
@@ -86,12 +100,14 @@ const App = ({}) => {
       }
     };
 
-    initWarp(SVGElementRef.current, complexity);
+    initWarp(SVGElementRef.current, complexity, setControlElements);
   }, [SVGfromFigma]);
 
   ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
+
+  // console.log(controlElements);
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// RENDER ////////////////////////////
@@ -114,6 +130,9 @@ const App = ({}) => {
           >
             <svg className={styles.SVG_controls} id="svg-control">
               <path id="control-path" />
+              {controlElements.map(item => {
+                return item;
+              })}
             </svg>
             <svg
               className={styles.SVG_container}

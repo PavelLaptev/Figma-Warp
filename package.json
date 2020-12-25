@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-draggable": "^4.4.3"
   },
   "devDependencies": {
     "@types/node-sass": "^4.11.0",
