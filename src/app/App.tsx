@@ -17,7 +17,11 @@ const ControlElement = props => {
 
   React.useEffect(() => {
     Draggable.create(controlRef.current, {
-      type: "x,y"
+      type: "x,y",
+      onDrag: () => {
+        console.log(props.warp);
+        props.warp.transform(reposition);
+      }
     });
   });
 
@@ -37,7 +41,7 @@ const ControlElement = props => {
   );
 };
 
-const drawControlElements = (pointsArray, resetState) => {
+const drawControlElements = (pointsArray, resetState, warp) => {
   return pointsArray.map((item, i) => {
     return (
       <ControlElement
@@ -46,28 +50,89 @@ const drawControlElements = (pointsArray, resetState) => {
         x={item[0]}
         y={item[1]}
         resetState={resetState}
+        warp={warp}
       />
     );
   });
 };
 
-const initWarp = (SVG, complexity, setControlElements, resetState) => {
-  if (SVG) {
-    const warp = new Warp(SVG);
-    warp.interpolate(4);
+//////////////////////////////////////////////
 
-    let pointsPosition = createPointsArray(
-      SVG.width.baseVal.value,
-      SVG.height.baseVal.value,
-      Number(complexity)
-    );
+// const initWarp = (SVG, complexity, setControlElements, resetState) => {
+//   if (SVG) {
+//     const warp = new Warp(SVG);
+//     warp.interpolate(4);
 
-    setControlElements(drawControlElements(pointsPosition, resetState));
+//     let pointsPosition = createPointsArray(
+//       SVG.width.baseVal.value,
+//       SVG.height.baseVal.value,
+//       Number(complexity)
+//     );
 
-    return new XMLSerializer().serializeToString(warp.element);
-  }
-  return;
-};
+//     setControlElements(drawControlElements(pointsPosition, resetState, warp));
+
+//     warp.transform(function(v0, V = pointsPosition) {
+//       const A = [];
+//       const W = [];
+//       const L = [];
+
+//       // Find angles
+//       for (let i = 0; i < V.length; i++) {
+//         const j = (i + 1) % V.length;
+
+//         const vi = V[i];
+//         const vj = V[j];
+
+//         const r0i = Math.sqrt((v0[0] - vi[0]) ** 2 + (v0[1] - vi[1]) ** 2);
+//         const r0j = Math.sqrt((v0[0] - vj[0]) ** 2 + (v0[1] - vj[1]) ** 2);
+//         const rij = Math.sqrt((vi[0] - vj[0]) ** 2 + (vi[1] - vj[1]) ** 2);
+
+//         const dn = 2 * r0i * r0j;
+//         const r = (r0i ** 2 + r0j ** 2 - rij ** 2) / dn;
+
+//         A[i] = isNaN(r) ? 0 : Math.acos(Math.max(-1, Math.min(r, 1)));
+//       }
+
+//       // Find weights
+//       for (let j = 0; j < V.length; j++) {
+//         const i = (j > 0 ? j : V.length) - 1;
+
+//         // const vi = V[i];
+//         const vj = V[j];
+
+//         const r = Math.sqrt((vj[0] - v0[0]) ** 2 + (vj[1] - v0[1]) ** 2);
+
+//         W[j] = (Math.tan(A[i] / 2) + Math.tan(A[j] / 2)) / r;
+//       }
+
+//       // Normalise weights
+//       const Ws = W.reduce((a, b) => a + b, 0);
+//       for (let i = 0; i < V.length; i++) {
+//         L[i] = W[i] / Ws;
+//       }
+
+//       // Save weights to the point for use when transforming
+//       return [...v0, ...L];
+//     });
+
+//     // Warp function
+//     function reposition([x, y, ...W], V = pointsPosition) {
+//       let nx = 0;
+//       let ny = 0;
+
+//       // Recreate the points using mean value coordinates
+//       for (let i = 0; i < V.length; i++) {
+//         nx += W[i] * V[i][0];
+//         ny += W[i] * V[i][1];
+//       }
+
+//       return [nx, ny, ...W];
+//     }
+
+//     warp.transform(reposition);
+//   }
+//   return;
+// };
 
 // Application
 const App = ({}) => {
@@ -92,6 +157,7 @@ const App = ({}) => {
       height: 0 as number
     }
   });
+  const [newSVG, setNewSVG] = React.useState(null);
   const [controlElements, setControlElements] = React.useState([]);
   const [complexity, setComplexity] = React.useState(2);
   const [resetState, setReset] = React.useState(false);
@@ -103,12 +169,8 @@ const App = ({}) => {
     // Check if we recieve Figma's SVG
 
     onmessage = event => {
-      // controlElements.map(item => {
-      //   console.log(item);
-      //   // TweenLite.set(controlRef.current, { x: 0, y: 0 });
-      // });
-      setReset(true);
       if (event.data.pluginMessage.type === "svg-from-figma") {
+        setReset(true);
         // Convert sttring to SVG DOM
         let SVGData = new DOMParser()
           .parseFromString(event.data.pluginMessage.data, "image/svg+xml")
@@ -138,12 +200,78 @@ const App = ({}) => {
 
         /////////////////////////////////
 
-        initWarp(
-          SVGElementRef.current,
-          complexity,
-          setControlElements,
-          resetState
+        const warp = new Warp(SVGElementRef.current);
+        warp.interpolate(4);
+
+        let pointsPosition = createPointsArray(
+          SVGElementRef.current.width.baseVal.value,
+          SVGElementRef.current.height.baseVal.value,
+          Number(complexity)
         );
+
+        setControlElements(
+          drawControlElements(pointsPosition, resetState, warp)
+        );
+
+        warp.transform(function(v0, V = pointsPosition) {
+          const A = [];
+          const W = [];
+          const L = [];
+
+          // Find angles
+          for (let i = 0; i < V.length; i++) {
+            const j = (i + 1) % V.length;
+
+            const vi = V[i];
+            const vj = V[j];
+
+            const r0i = Math.sqrt((v0[0] - vi[0]) ** 2 + (v0[1] - vi[1]) ** 2);
+            const r0j = Math.sqrt((v0[0] - vj[0]) ** 2 + (v0[1] - vj[1]) ** 2);
+            const rij = Math.sqrt((vi[0] - vj[0]) ** 2 + (vi[1] - vj[1]) ** 2);
+
+            const dn = 2 * r0i * r0j;
+            const r = (r0i ** 2 + r0j ** 2 - rij ** 2) / dn;
+
+            A[i] = isNaN(r) ? 0 : Math.acos(Math.max(-1, Math.min(r, 1)));
+          }
+
+          // Find weights
+          for (let j = 0; j < V.length; j++) {
+            const i = (j > 0 ? j : V.length) - 1;
+
+            // const vi = V[i];
+            const vj = V[j];
+
+            const r = Math.sqrt((vj[0] - v0[0]) ** 2 + (vj[1] - v0[1]) ** 2);
+
+            W[j] = (Math.tan(A[i] / 2) + Math.tan(A[j] / 2)) / r;
+          }
+
+          // Normalise weights
+          const Ws = W.reduce((a, b) => a + b, 0);
+          for (let i = 0; i < V.length; i++) {
+            L[i] = W[i] / Ws;
+          }
+
+          // Save weights to the point for use when transforming
+          return [...v0, ...L];
+        });
+
+        // Warp function
+        function reposition([x, y, ...W], V = pointsPosition) {
+          let nx = 0;
+          let ny = 0;
+
+          // Recreate the points using mean value coordinates
+          for (let i = 0; i < V.length; i++) {
+            nx += W[i] * V[i][0];
+            ny += W[i] * V[i][1];
+          }
+
+          return [nx, ny, ...W];
+        }
+
+        warp.transform(reposition);
       }
     };
   }, [SVGfromFigma, resetState]);
