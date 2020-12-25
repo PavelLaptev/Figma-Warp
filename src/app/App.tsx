@@ -6,37 +6,10 @@ import {
 } from "../libs/react-zoom-pan-pinch";
 import { getRatioSize, createPointsArray } from "../utils";
 import Warp from "warpjs";
-import ControlPointEl from "./components/ControlPointEl";
+import { gsap, TweenLite } from "gsap";
+import { Draggable } from "gsap/Draggable";
 
-const drawControlElements = pointsArray => {
-  return pointsArray.map((item, i) => {
-    return (
-      <ControlPointEl
-        key={`point-${i}`}
-        position={{ x: item[0], y: item[1] }}
-      />
-    );
-  });
-};
-
-const initWarp = (SVG, complexity, setState) => {
-  if (SVG) {
-    const warp = new Warp(SVG);
-    warp.interpolate(4);
-
-    let pointsPosition = createPointsArray(
-      SVG.width.baseVal.value,
-      SVG.height.baseVal.value,
-      Number(complexity)
-    );
-
-    // console.log(pointsPosition);
-    setState(drawControlElements(pointsPosition));
-
-    return new XMLSerializer().serializeToString(warp.element);
-  }
-  return;
-};
+gsap.registerPlugin(Draggable);
 
 // Application
 const App = ({}) => {
@@ -70,6 +43,11 @@ const App = ({}) => {
   React.useEffect(() => {
     // Check if we recieve Figma's SVG
     onmessage = event => {
+      controlElements.map(item => {
+        console.log(item);
+        // TweenLite.set(controlRef.current, { x: 0, y: 0 });
+      });
+
       if (event.data.pluginMessage.type === "svg-from-figma") {
         // Convert sttring to SVG DOM
         let SVGData = new DOMParser()
@@ -97,10 +75,35 @@ const App = ({}) => {
             height: newSVGSize.height
           }
         });
+
+        /////////////////////////////////
+
+        const warp = new Warp(SVGElementRef.current);
+        warp.interpolate(4);
+
+        let pointsPosition = createPointsArray(
+          SVGElementRef.current.width.baseVal.value,
+          SVGElementRef.current.height.baseVal.value,
+          Number(complexity)
+        );
+
+        console.log(pointsPosition);
+
+        let controlElelements = pointsPosition.map((item, i) => {
+          return (
+            <circle
+              key={`controlEl-${i}`}
+              className={styles.SVG_controlItem}
+              cx={item[0]}
+              cy={item[1]}
+              r="20"
+            />
+          );
+        });
+
+        setControlElements(controlElelements);
       }
     };
-
-    initWarp(SVGElementRef.current, complexity, setControlElements);
   }, [SVGfromFigma]);
 
   ////////////////////////////////////////////////////////////////

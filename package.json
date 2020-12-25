@@ -9,6 +9,7 @@
     "prettier:format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,json}' "
   },
   "dependencies": {
+    "gsap": "^3.5.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-draggable": "^4.4.3"

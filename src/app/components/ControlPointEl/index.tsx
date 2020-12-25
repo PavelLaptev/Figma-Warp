@@ -10,11 +10,16 @@ interface Props {
 }
 
 const ControlPointEl: React.FunctionComponent<Props> = props => {
+  console.log(props.position);
+
   const [position, setPosition] = React.useState({
     x: props.position.x,
     y: props.position.y,
     active: false,
-    offset: {}
+    offset: {
+      x: props.position.x,
+      y: props.position.y
+    }
   });
 
   const handlePointerDown = e => {
@@ -44,7 +49,7 @@ const ControlPointEl: React.FunctionComponent<Props> = props => {
       });
     }
   };
-  const handlePointerUp = e => {
+  const handlePointerUp = () => {
     setPosition({
       ...position,
       active: false
@@ -55,7 +60,7 @@ const ControlPointEl: React.FunctionComponent<Props> = props => {
     <circle
       cx={position.x}
       cy={position.y}
-      r={50}
+      r={10}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerMove={handlePointerMove}
