@@ -4,6 +4,7 @@ interface CssExports {
   SVG_container: string;
   SVG_controlItem: string;
   SVG_controls: string;
+  SVG_path: string;
   SVG_wrapper: string;
   app: string;
 }
