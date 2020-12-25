@@ -11,6 +11,64 @@ import { Draggable } from "gsap/Draggable";
 
 gsap.registerPlugin(Draggable);
 
+const ControlElement = props => {
+  // console.log(props.resetState);
+  const controlRef = React.useRef(null);
+
+  React.useEffect(() => {
+    Draggable.create(controlRef.current, {
+      type: "x,y"
+    });
+  });
+
+  if (props.resetState) {
+    console.log(true);
+    TweenLite.set(controlRef.current, { x: 0, y: 0 });
+  }
+
+  return (
+    <circle
+      ref={controlRef}
+      className={props.className}
+      cx={props.x}
+      cy={props.y}
+      r="20"
+    />
+  );
+};
+
+const drawControlElements = (pointsArray, resetState) => {
+  return pointsArray.map((item, i) => {
+    return (
+      <ControlElement
+        key={`controlEl-${i}`}
+        className={styles.SVG_controlItem}
+        x={item[0]}
+        y={item[1]}
+        resetState={resetState}
+      />
+    );
+  });
+};
+
+const initWarp = (SVG, complexity, setControlElements, resetState) => {
+  if (SVG) {
+    const warp = new Warp(SVG);
+    warp.interpolate(4);
+
+    let pointsPosition = createPointsArray(
+      SVG.width.baseVal.value,
+      SVG.height.baseVal.value,
+      Number(complexity)
+    );
+
+    setControlElements(drawControlElements(pointsPosition, resetState));
+
+    return new XMLSerializer().serializeToString(warp.element);
+  }
+  return;
+};
+
 // Application
 const App = ({}) => {
   ////////////////////////////////////////////////////////////////
@@ -36,18 +94,20 @@ const App = ({}) => {
   });
   const [controlElements, setControlElements] = React.useState([]);
   const [complexity, setComplexity] = React.useState(2);
+  const [resetState, setReset] = React.useState(false);
 
   ////////////////////////////////////////////////////////////////
   ////////////////////////// USE EFFECT //////////////////////////
   ///////////////////////////////////////////////////////////////
   React.useEffect(() => {
     // Check if we recieve Figma's SVG
-    onmessage = event => {
-      controlElements.map(item => {
-        console.log(item);
-        // TweenLite.set(controlRef.current, { x: 0, y: 0 });
-      });
 
+    onmessage = event => {
+      // controlElements.map(item => {
+      //   console.log(item);
+      //   // TweenLite.set(controlRef.current, { x: 0, y: 0 });
+      // });
+      setReset(true);
       if (event.data.pluginMessage.type === "svg-from-figma") {
         // Convert sttring to SVG DOM
         let SVGData = new DOMParser()
@@ -78,39 +138,22 @@ const App = ({}) => {
 
         /////////////////////////////////
 
-        const warp = new Warp(SVGElementRef.current);
-        warp.interpolate(4);
-
-        let pointsPosition = createPointsArray(
-          SVGElementRef.current.width.baseVal.value,
-          SVGElementRef.current.height.baseVal.value,
-          Number(complexity)
+        initWarp(
+          SVGElementRef.current,
+          complexity,
+          setControlElements,
+          resetState
         );
-
-        console.log(pointsPosition);
-
-        let controlElelements = pointsPosition.map((item, i) => {
-          return (
-            <circle
-              key={`controlEl-${i}`}
-              className={styles.SVG_controlItem}
-              cx={item[0]}
-              cy={item[1]}
-              r="20"
-            />
-          );
-        });
-
-        setControlElements(controlElelements);
       }
     };
-  }, [SVGfromFigma]);
+  }, [SVGfromFigma, resetState]);
 
   ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
 
   // console.log(controlElements);
+  // setReset(false);
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// RENDER ////////////////////////////
