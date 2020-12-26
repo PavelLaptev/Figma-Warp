@@ -71,14 +71,15 @@ const App = ({}) => {
         // SVGControlContainerRef.current
         //   .getElementsByTagName("circle")
         //   .map(item => {});
-        let circllesCollection = SVGControlContainerRef.current.getElementsByTagName(
-          "circle"
-        );
 
-        for (let item of circllesCollection) {
-          item.transform.baseVal[0].matrix.e = 0;
-          item.transform.baseVal[0].matrix.f = 0;
-        }
+        // let circllesCollection = SVGControlContainerRef.current.getElementsByTagName(
+        //   "circle"
+        // );
+
+        // for (let item of circllesCollection) {
+        //   item.transform.baseVal[0].matrix.e = 0;
+        //   item.transform.baseVal[0].matrix.f = 0;
+        // }
       }
     };
   }, [SVGfromFigma]);
@@ -122,6 +123,7 @@ const App = ({}) => {
                 return (
                   <ControlDot
                     // ref={dotRefs[i]}
+                    SVGKey={SVGfromFigma.htmlString}
                     key={`dot-${i}`}
                     position={{ x: item[0], y: item[1] }}
                   />
