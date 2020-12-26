@@ -1,5 +1,4 @@
-import { render } from "node-sass";
-import React from "react";
+import * as React from "react";
 
 interface Props {
   position: {
@@ -7,7 +6,7 @@ interface Props {
     y: number;
   };
   SVGKey?: string;
-  onChange?(event: React.FormEvent<HTMLInputElement>): void;
+  onMove?: (e) => void;
 }
 
 const ControlDot: React.FunctionComponent<Props> = props => {
@@ -57,6 +56,7 @@ const ControlDot: React.FunctionComponent<Props> = props => {
         x: position.x - (position.offset.x - x),
         y: position.y - (position.offset.y - y)
       });
+      props.onMove ? props.onMove(e) : false;
     }
   };
 

@@ -4,13 +4,14 @@ import {
   TransformWrapper,
   TransformComponent
 } from "../libs/react-zoom-pan-pinch";
-import { getRatioSize, createPointsArray } from "../utils";
 import Warp from "warpjs";
-import { gsap, TweenLite } from "gsap";
-import { Draggable } from "gsap/Draggable";
+import {
+  getRatioSize,
+  createPointsArray,
+  warpIt,
+  warpReposition
+} from "../utils";
 import ControlDot from "./components/ControlDot";
-
-gsap.registerPlugin(Draggable);
 
 // Application
 const App = ({}) => {
@@ -68,6 +69,17 @@ const App = ({}) => {
 
         /////////////////////////////////
 
+        const warp = new Warp(SVGElementRef.current);
+        warp.interpolate(4);
+
+        warpIt(warp, SVGfromFigma.points);
+
+        warpReposition([], SVGfromFigma.points);
+
+        // console.log(SVGfromFigma.points);
+
+        /////////////////////////////////
+
         // SVGControlContainerRef.current
         //   .getElementsByTagName("circle")
         //   .map(item => {});
@@ -122,7 +134,6 @@ const App = ({}) => {
               {SVGfromFigma.points.map((item, i) => {
                 return (
                   <ControlDot
-                    // ref={dotRefs[i]}
                     SVGKey={SVGfromFigma.htmlString}
                     key={`dot-${i}`}
                     position={{ x: item[0], y: item[1] }}
