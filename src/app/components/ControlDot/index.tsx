@@ -9,16 +9,16 @@ interface Props {
   onChange?(event: React.FormEvent<HTMLInputElement>): void;
 }
 
-const ControlPoint: React.FunctionComponent<Props> = props => {
-  console.log(props.position);
+const ControlDot: React.FunctionComponent<Props> = props => {
+  const [key, setKey] = React.useState(0);
 
   const [position, setPosition] = React.useState({
-    x: props.position.x,
-    y: props.position.y,
+    x: 0,
+    y: 0,
     active: false,
     offset: {
-      x: props.position.x,
-      y: props.position.y
+      x: 0,
+      y: 0
     }
   });
 
@@ -37,6 +37,7 @@ const ControlPoint: React.FunctionComponent<Props> = props => {
       }
     });
   };
+
   const handlePointerMove = e => {
     const bbox = e.target.getBoundingClientRect();
     const x = e.clientX - bbox.left;
@@ -49,6 +50,7 @@ const ControlPoint: React.FunctionComponent<Props> = props => {
       });
     }
   };
+
   const handlePointerUp = () => {
     setPosition({
       ...position,
@@ -58,19 +60,21 @@ const ControlPoint: React.FunctionComponent<Props> = props => {
 
   return (
     <circle
-      cx={position.x}
-      cy={position.y}
+      key={key}
+      cx={props.position.x}
+      cy={props.position.y}
       r={10}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerMove={handlePointerMove}
+      transform={`translate(${position.x}, ${position.y})`}
       fill={position.active ? "blue" : "black"}
     />
   );
 };
 
-ControlPoint.defaultProps = {
-  reset: false
+ControlDot.defaultProps = {
+  reset: true
 } as Partial<Props>;
 
-export default ControlPoint;
+export default ControlDot;
