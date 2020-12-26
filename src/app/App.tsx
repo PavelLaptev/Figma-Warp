@@ -36,8 +36,7 @@ const App = ({}) => {
       height: 0 as number
     }
   });
-  const [newSVG, setNewSVG] = React.useState(null);
-  const [controlElements, setControlElements] = React.useState([]);
+
   const [complexity, setComplexity] = React.useState(2);
   const [resetState, setReset] = React.useState(false);
 
@@ -51,6 +50,7 @@ const App = ({}) => {
       if (event.data.pluginMessage.type === "svg-from-figma") {
         SVGControlContainerRef.current.innerHTML = "";
         setReset(true);
+
         // Convert sttring to SVG DOM
         let SVGData = new DOMParser()
           .parseFromString(event.data.pluginMessage.data, "image/svg+xml")
@@ -63,7 +63,7 @@ const App = ({}) => {
           400
         );
 
-        console.log(newSVGSize);
+        ///////////////////////////////////
 
         setSVGfromFigma({
           htmlString: SVGData.innerHTML,

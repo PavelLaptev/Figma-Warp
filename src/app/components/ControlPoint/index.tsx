@@ -9,7 +9,7 @@ interface Props {
   onChange?(event: React.FormEvent<HTMLInputElement>): void;
 }
 
-const ControlPointEl: React.FunctionComponent<Props> = props => {
+const ControlPoint: React.FunctionComponent<Props> = props => {
   console.log(props.position);
 
   const [position, setPosition] = React.useState({
@@ -69,8 +69,8 @@ const ControlPointEl: React.FunctionComponent<Props> = props => {
   );
 };
 
-ControlPointEl.defaultProps = {
+ControlPoint.defaultProps = {
   reset: false
 } as Partial<Props>;
 
-export default ControlPointEl;
+export default ControlPoint;
