@@ -32,14 +32,9 @@ const App = ({}) => {
       width: 0 as number,
       height: 0 as number
     },
-    newSize: {
-      width: 0 as number,
-      height: 0 as number
-    },
     points: []
   });
 
-  const [pointsState, setPoints] = React.useState([]);
   const [complexity, setComplexity] = React.useState(2);
 
   ////////////////////////////////////////////////////////////////
@@ -64,10 +59,6 @@ const App = ({}) => {
             width: SVGData.width.baseVal.value,
             height: SVGData.height.baseVal.value
           },
-          newSize: {
-            width: SVGData.width.baseVal.value,
-            height: SVGData.height.baseVal.value
-          },
           points: createPointsArray(
             SVGData.width.baseVal.value,
             SVGData.height.baseVal.value,
@@ -76,6 +67,18 @@ const App = ({}) => {
         });
 
         /////////////////////////////////
+
+        // SVGControlContainerRef.current
+        //   .getElementsByTagName("circle")
+        //   .map(item => {});
+        let circllesCollection = SVGControlContainerRef.current.getElementsByTagName(
+          "circle"
+        );
+
+        for (let item of circllesCollection) {
+          item.transform.baseVal[0].matrix.e = 0;
+          item.transform.baseVal[0].matrix.f = 0;
+        }
       }
     };
   }, [SVGfromFigma]);
@@ -85,7 +88,6 @@ const App = ({}) => {
   ////////////////////////////////////////////////////////////////
 
   console.log(SVGfromFigma);
-  // setReset(false);
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// RENDER ////////////////////////////
@@ -102,8 +104,8 @@ const App = ({}) => {
             className={styles.SVG_wrapper}
             ref={SVGContainerRef}
             style={{
-              width: `${SVGfromFigma.newSize.width}px`,
-              height: `${SVGfromFigma.newSize.height}px`
+              width: `${SVGfromFigma.currentSize.width}px`,
+              height: `${SVGfromFigma.currentSize.height}px`
             }}
           >
             <svg
@@ -119,7 +121,7 @@ const App = ({}) => {
               {SVGfromFigma.points.map((item, i) => {
                 return (
                   <ControlDot
-                    reset
+                    // ref={dotRefs[i]}
                     key={`dot-${i}`}
                     position={{ x: item[0], y: item[1] }}
                   />

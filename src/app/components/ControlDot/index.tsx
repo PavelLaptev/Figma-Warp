@@ -9,69 +9,78 @@ interface Props {
   onChange?(event: React.FormEvent<HTMLInputElement>): void;
 }
 
-const ControlDot: React.FunctionComponent<Props> = props => {
-  const [key, setKey] = React.useState(0);
+interface RefObject {
+  reset: (val) => void;
+}
 
-  const [position, setPosition] = React.useState({
-    x: 0,
-    y: 0,
-    active: false,
-    offset: {
+const ControlDot = React.forwardRef(
+  (props: Props, ref: React.Ref<RefObject>) => {
+    const [position, setPosition] = React.useState({
       x: 0,
-      y: 0
-    }
-  });
-
-  const handlePointerDown = e => {
-    const el = e.target;
-    const bbox = e.target.getBoundingClientRect();
-    const x = e.clientX - bbox.left;
-    const y = e.clientY - bbox.top;
-    el.setPointerCapture(e.pointerId);
-    setPosition({
-      ...position,
-      active: true,
+      y: 0,
+      active: false,
       offset: {
-        x,
-        y
+        x: 0,
+        y: 0
       }
     });
-  };
 
-  const handlePointerMove = e => {
-    const bbox = e.target.getBoundingClientRect();
-    const x = e.clientX - bbox.left;
-    const y = e.clientY - bbox.top;
-    if (position.active) {
+    React.useImperativeHandle(ref, () => ({
+      reset(val) {
+        console.log(val);
+      }
+    }));
+
+    const handlePointerDown = e => {
+      const el = e.target;
+      const bbox = e.target.getBoundingClientRect();
+      const x = e.clientX - bbox.left;
+      const y = e.clientY - bbox.top;
+      el.setPointerCapture(e.pointerId);
       setPosition({
         ...position,
-        x: position.x - (position.offset.x - x),
-        y: position.y - (position.offset.y - y)
+        active: true,
+        offset: {
+          x,
+          y
+        }
       });
-    }
-  };
+    };
 
-  const handlePointerUp = () => {
-    setPosition({
-      ...position,
-      active: false
-    });
-  };
+    const handlePointerMove = e => {
+      const bbox = e.target.getBoundingClientRect();
+      const x = e.clientX - bbox.left;
+      const y = e.clientY - bbox.top;
+      if (position.active) {
+        setPosition({
+          ...position,
+          x: position.x - (position.offset.x - x),
+          y: position.y - (position.offset.y - y)
+        });
+      }
+    };
 
-  return (
-    <circle
-      key={key}
-      cx={props.position.x}
-      cy={props.position.y}
-      r={10}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerMove={handlePointerMove}
-      transform={`translate(${position.x}, ${position.y})`}
-      fill={position.active ? "blue" : "black"}
-    />
-  );
-};
+    const handlePointerUp = () => {
+      setPosition({
+        ...position,
+        active: false
+      });
+    };
+
+    return (
+      <circle
+        cx={props.position.x}
+        cy={props.position.y}
+        r={10}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerMove={handlePointerMove}
+        transform={`translate(${position.x}, ${position.y})`}
+        fill={position.active ? "blue" : "black"}
+      />
+    );
+  }
+);
 
 ControlDot.defaultProps = {
   reset: true
