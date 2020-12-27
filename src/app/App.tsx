@@ -22,6 +22,7 @@ const App = ({}) => {
   const SVGControlContainerRef = React.useRef(null);
   const SVGElementRef = React.useRef(null);
   const SVGControlPath = React.useRef(null);
+  const SVGControlDots = React.useRef(null);
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// STATES ////////////////////////////
@@ -53,6 +54,12 @@ const App = ({}) => {
 
         ///////////////////////////////////
 
+        let points = createPointsArray(
+          SVGData.width.baseVal.value,
+          SVGData.height.baseVal.value,
+          Number(complexity)
+        );
+
         setSVGfromFigma({
           htmlString: SVGData.innerHTML,
           viewbox: `0 0 ${SVGData.viewBox.baseVal.width} ${SVGData.viewBox.baseVal.height}`,
@@ -60,11 +67,7 @@ const App = ({}) => {
             width: SVGData.width.baseVal.value,
             height: SVGData.height.baseVal.value
           },
-          points: createPointsArray(
-            SVGData.width.baseVal.value,
-            SVGData.height.baseVal.value,
-            Number(complexity)
-          )
+          points: points
         });
 
         /////////////////////////////////
@@ -72,11 +75,29 @@ const App = ({}) => {
         const warp = new Warp(SVGElementRef.current);
         warp.interpolate(4);
 
-        warpIt(warp, SVGfromFigma.points);
+        warpIt(warp, points);
+        warpReposition(warp, points);
 
-        warpReposition([], SVGfromFigma.points);
+        const doOnMove = (e, i) => {
+          const relativeX = e.pageX - e.target.cx.baseVal.value;
+          const relativeY = e.pageY - e.target.cy.baseVal.value;
+          // console.log(
+          //   e.pageX - e.target.getBoundingClientRect().left,
+          //   e.pageY - e.target.getBoundingClientRect().top
+          // );
+          points[i] = [relativeX, relativeY];
+          console.log(points[i]);
+          warpReposition(warp, points);
+        };
 
-        // console.log(SVGfromFigma.points);
+        console.log(SVGControlDots.current.childNodes);
+        [...SVGControlDots.current.childNodes].map((item, i) => {
+          // console.log(item);
+          item.addEventListener("mousemove", e => doOnMove(e, i), false);
+        });
+        // SVGControlContainerRef.current.children.map(item => {
+        //   console.log(item);
+        // });
 
         /////////////////////////////////
 
@@ -101,6 +122,33 @@ const App = ({}) => {
   ////////////////////////////////////////////////////////////////
 
   console.log(SVGfromFigma);
+
+  // const updatePointPosition = (e, i) => {
+  //   console.log(e.target.getBoundingClientRect().left, i);
+  //   // console.log(SVGfromFigma.points);
+  //   // setSVGfromFigma({
+  //   //   ...SVGfromFigma,
+  //   //   points: [0]
+  //   // });
+
+  //   // let newArr = SVGfromFigma.points.map((item, j) => {
+  //   //   if (j === i) {
+  //   //     return [
+  //   //       e.target.getBoundingClientRect().left,
+  //   //       e.target.getBoundingClientRect().top
+  //   //     ];
+  //   //   } else {
+  //   //     return item;
+  //   //   }
+  //   //   // return item;
+  //   // });
+
+  //   // setSVGfromFigma({
+  //   //   ...SVGfromFigma,
+  //   //   points: newArr
+  //   // });
+  //   // console.log(newArr);
+  // };
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// RENDER ////////////////////////////
@@ -131,15 +179,17 @@ const App = ({}) => {
                 id="control-path"
                 className={styles.SVG_path}
               />
-              {SVGfromFigma.points.map((item, i) => {
-                return (
-                  <ControlDot
-                    SVGKey={SVGfromFigma.htmlString}
-                    key={`dot-${i}`}
-                    position={{ x: item[0], y: item[1] }}
-                  />
-                );
-              })}
+              <g ref={SVGControlDots}>
+                {SVGfromFigma.points.map((item, i) => {
+                  return (
+                    <ControlDot
+                      SVGKey={SVGfromFigma.htmlString}
+                      key={`dot-${i}`}
+                      position={{ x: item[0], y: item[1] }}
+                    />
+                  );
+                })}
+              </g>
             </svg>
             <svg
               className={styles.SVG_container}

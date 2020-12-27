@@ -10,6 +10,7 @@ interface Props {
 }
 
 const ControlDot: React.FunctionComponent<Props> = props => {
+  const dotRef = React.useRef(null);
   const [position, setPosition] = React.useState({
     x: 0,
     y: 0,
@@ -76,6 +77,7 @@ const ControlDot: React.FunctionComponent<Props> = props => {
 
   return (
     <circle
+      ref={dotRef}
       cx={props.position.x}
       cy={props.position.y}
       r={10}

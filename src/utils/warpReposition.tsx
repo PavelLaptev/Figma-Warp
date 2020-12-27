@@ -2,17 +2,21 @@
 /////////////////// WARP REPOSITION //////////////////////
 //////////////////////////////////////////////////////////
 
-function warpReposition([x, y, ...W], V) {
-  let nx = 0;
-  let ny = 0;
+const warpReposition = (warp, points) => {
+  const reposition = ([x, y, ...W], V = points) => {
+    let nx = 0;
+    let ny = 0;
 
-  // Recreate the points using mean value coordinates
-  for (let i = 0; i < V.length; i++) {
-    nx += W[i] * V[i][0];
-    ny += W[i] * V[i][1];
-  }
+    // Recreate the points using mean value coordinates
+    for (let i = 0; i < V.length; i++) {
+      nx += W[i] * V[i][0];
+      ny += W[i] * V[i][1];
+    }
 
-  return [nx, ny, ...W];
-}
+    return [nx, ny, ...W];
+  };
+
+  warp.transform(reposition);
+};
 
 export default warpReposition;
