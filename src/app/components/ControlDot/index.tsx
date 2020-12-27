@@ -1,4 +1,5 @@
 import * as React from "react";
+import { TweenLite } from "gsap";
 
 interface Props {
   position: {
@@ -10,41 +11,16 @@ interface Props {
 }
 
 const ControlDot: React.FunctionComponent<Props> = props => {
-  const [position, setPosition] = React.useState({
-    x: 0,
-    y: 0,
-    active: false,
-    offset: {
-      x: 0,
-      y: 0
-    }
-  });
-
-  const initialState = {
-    x: 0,
-    y: 0,
-    active: false,
-    offset: {
-      x: 0,
-      y: 0
-    }
-  };
+  const dotRef = React.useRef(null);
 
   React.useEffect(() => {
-    return () => {
-      // console.log(props.SVGKey);
-      setPosition(initialState);
-    };
+    if (dotRef.current.transform.baseVal.length > 0) {
+      TweenLite.set(dotRef.current, { x: 0, y: 0 });
+    }
   }, [props.SVGKey]);
 
   return (
-    <circle
-      cx={props.position.x}
-      cy={props.position.y}
-      r={10}
-      transform={`translate(${position.x}, ${position.y})`}
-      fill={position.active ? "blue" : "black"}
-    />
+    <circle ref={dotRef} cx={props.position.x} cy={props.position.y} r={10} />
   );
 };
 

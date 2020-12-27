@@ -22,7 +22,22 @@ const createPointsArray = (width, height, amount) => {
     .map((_, i) => [getDotDistance(width, ++i), 0])
     .reverse();
 
-  return [...leftSideDots, ...bottomSideDots, ...rightSideDots, ...topSideDots];
+  let dotsArray = [
+    ...leftSideDots,
+    ...bottomSideDots,
+    ...rightSideDots,
+    ...topSideDots
+  ];
+
+  const controlBuffer = 5;
+  for (let i = 0; i < dotsArray.length; i++) {
+    if (dotsArray[i][0] === 0) dotsArray[i][0] -= controlBuffer;
+    if (dotsArray[i][1] === 0) dotsArray[i][1] -= controlBuffer;
+    if (dotsArray[i][0] === width) dotsArray[i][0] += controlBuffer;
+    if (dotsArray[i][1] === height) dotsArray[i][1] += controlBuffer;
+  }
+
+  return dotsArray;
 };
 
 export default createPointsArray;

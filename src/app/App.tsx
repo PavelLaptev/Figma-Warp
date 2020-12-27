@@ -1,13 +1,8 @@
 import * as React from "react";
 import styles from "./app.module.scss";
 import Warp from "warpjs";
-import {
-  getRatioSize,
-  createPointsArray,
-  warpIt,
-  warpReposition
-} from "../utils";
-import { gsap, TweenLite } from "gsap";
+import { createPointsArray, warpIt, warpReposition } from "../utils";
+import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import ControlDot from "./components/ControlDot";
 
@@ -73,21 +68,19 @@ const App = ({}) => {
         /////////////////////////////////
 
         const warp = new Warp(SVGElementRef.current);
-        warp.interpolate(4);
+        warp.interpolate(2);
 
         warpIt(warp, points);
         warpReposition(warp, points);
 
         [...SVGControlDots.current.childNodes].map((item, i) => {
-          // console.log(item);
           Draggable.create(item, {
             type: "x,y",
             onDrag: function() {
-              console.log("s");
-              const relativeX =
+              let relativeX =
                 this.pointerX -
                 SVGContainerRef.current.getBoundingClientRect().left;
-              const relativeY =
+              let relativeY =
                 this.pointerY -
                 SVGContainerRef.current.getBoundingClientRect().top;
               points[i] = [relativeX, relativeY];
@@ -95,24 +88,8 @@ const App = ({}) => {
             }
           });
         });
-        // SVGControlContainerRef.current.children.map(item => {
-        //   console.log(item);
-        // });
 
-        /////////////////////////////////
-
-        // SVGControlContainerRef.current
-        //   .getElementsByTagName("circle")
-        //   .map(item => {});
-
-        // let circllesCollection = SVGControlContainerRef.current.getElementsByTagName(
-        //   "circle"
-        // );
-
-        // for (let item of circllesCollection) {
-        //   item.transform.baseVal[0].matrix.e = 0;
-        //   item.transform.baseVal[0].matrix.f = 0;
-        // }
+        //////////////////////////////////////////
       }
     };
   }, [SVGfromFigma]);
@@ -123,32 +100,16 @@ const App = ({}) => {
 
   console.log(SVGfromFigma);
 
-  // const updatePointPosition = (e, i) => {
-  //   console.log(e.target.getBoundingClientRect().left, i);
-  //   // console.log(SVGfromFigma.points);
-  //   // setSVGfromFigma({
-  //   //   ...SVGfromFigma,
-  //   //   points: [0]
-  //   // });
+  const createNewPath = points => {
+    let path = [`M${points[0][0]} ${points[0][1]}`];
 
-  //   // let newArr = SVGfromFigma.points.map((item, j) => {
-  //   //   if (j === i) {
-  //   //     return [
-  //   //       e.target.getBoundingClientRect().left,
-  //   //       e.target.getBoundingClientRect().top
-  //   //     ];
-  //   //   } else {
-  //   //     return item;
-  //   //   }
-  //   //   // return item;
-  //   // });
+    for (let i = 1; i < points.length; i++) {
+      path.push(`L${points[i][0]} ${points[i][1]}`);
+    }
 
-  //   // setSVGfromFigma({
-  //   //   ...SVGfromFigma,
-  //   //   points: newArr
-  //   // });
-  //   // console.log(newArr);
-  // };
+    path.push("Z");
+    return path;
+  };
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// RENDER ////////////////////////////
