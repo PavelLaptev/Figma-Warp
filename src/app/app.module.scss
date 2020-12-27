@@ -1,4 +1,12 @@
 .app {
+  position: relative;
+}
+
+///////////////////////////////
+///////////////////////////////
+///////////////////////////////
+
+.view {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,4 +56,15 @@
     fill: none;
     stroke: #f45;
   }
+}
+
+///////////////////////////////
+///////////////////////////////
+///////////////////////////////
+
+.ui {
+  position: absolute;
+  padding: 20px;
+  background: white;
+  border: 1px solid;
 }

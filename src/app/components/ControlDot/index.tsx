@@ -1,4 +1,5 @@
 import * as React from "react";
+import styles from "./style.module.scss";
 import { TweenLite } from "gsap";
 
 interface Props {
@@ -20,7 +21,13 @@ const ControlDot: React.FunctionComponent<Props> = props => {
   }, [props.SVGKey]);
 
   return (
-    <circle ref={dotRef} cx={props.position.x} cy={props.position.y} r={10} />
+    <circle
+      className={styles.dot}
+      ref={dotRef}
+      cx={props.position.x}
+      cy={props.position.y}
+      r={10}
+    />
   );
 };
 

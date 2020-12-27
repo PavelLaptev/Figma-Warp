@@ -1,0 +1,9 @@
+.dot {
+  fill: #f45;
+  &:hover {
+    fill: #0ed381;
+  }
+  &:active {
+    fill: #2d3bff;
+  }
+}
