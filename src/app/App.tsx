@@ -73,7 +73,7 @@ const App = ({}) => {
         /////////////////////////////////
 
         const warp = new Warp(SVGElementRef.current);
-        warp.interpolate(1);
+        warp.interpolate(100);
 
         warpIt(warp, points);
         warpReposition(warp, points);
