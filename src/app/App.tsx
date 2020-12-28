@@ -10,6 +10,7 @@ import {
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import ControlDot from "./components/ControlDot";
+import Range from "./components/Range";
 
 gsap.registerPlugin(Draggable);
 
@@ -44,7 +45,6 @@ const App = ({}) => {
   ///////////////////////////////////////////////////////////////
   React.useEffect(() => {
     // Check if we recieve Figma's SVG
-
     onmessage = event => {
       if (event.data.pluginMessage.type === "svg-from-figma") {
         // Convert sttring to SVG DOM
@@ -73,7 +73,7 @@ const App = ({}) => {
         /////////////////////////////////
 
         const warp = new Warp(SVGElementRef.current);
-        warp.interpolate(100);
+        warp.interpolate(500);
 
         warpIt(warp, points);
         warpReposition(warp, points);
@@ -100,13 +100,27 @@ const App = ({}) => {
         //////////////////////////////////////////
       }
     };
-  }, [SVGfromFigma]);
+  }, [SVGfromFigma, complexity]);
 
   ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
 
-  console.log(SVGfromFigma);
+  // console.log(SVGfromFigma);
+  const handleComplexity = e => {
+    setComplexity(e.target.value);
+    // let newPoints = createPointsArray(
+    //   SVGfromFigma.currentSize.width,
+    //   SVGfromFigma.currentSize.height,
+    //   Number(e.target.value)
+    // );
+    // console.log(newPoints);
+    // setSVGfromFigma({
+    //   ...SVGfromFigma,
+    //   points: newPoints
+    // });
+    parent.postMessage({ pluginMessage: { type: "complexity" } }, "*");
+  };
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// RENDER ////////////////////////////
@@ -114,7 +128,7 @@ const App = ({}) => {
   return (
     <div className={styles.app}>
       <section className={styles.ui}>
-        <input type="checkbox" name="mouse-release-update" />
+        <Range value={complexity} onChange={handleComplexity} />
       </section>
       <section className={styles.view}>
         <div

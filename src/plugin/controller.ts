@@ -47,8 +47,17 @@ init();
 
 figma.on("selectionchange", () => {
   console.clear();
+  console.log("cleared by new section");
   init();
 });
+
+figma.ui.onmessage = msg => {
+  if (msg.type === "complexity") {
+    console.clear();
+    console.log("cleared by msg");
+    init();
+  }
+};
 
 // figma.ui.onmessage = msg => {
 //   let node = figma.currentPage.selection[0];
