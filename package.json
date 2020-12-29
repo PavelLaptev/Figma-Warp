@@ -12,7 +12,8 @@
     "gsap": "^3.5.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-draggable": "^4.4.3"
+    "react-draggable": "^4.4.3",
+    "shortid": "^2.2.16"
   },
   "devDependencies": {
     "@types/node-sass": "^4.11.0",

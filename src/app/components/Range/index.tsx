@@ -2,6 +2,9 @@ import React from "react";
 
 interface Props {
   value?: number;
+  min?: number;
+  max?: number;
+  step?: number;
   onChange?(event: React.FormEvent<HTMLInputElement>): void;
 }
 
@@ -21,9 +24,9 @@ const Range = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
     <input
       ref={ref as any}
       type="range"
-      min="1"
-      max="6"
-      step="1"
+      min={props.min}
+      max={props.max}
+      step={props.step}
       value={value}
       onChange={handleChange}
     />
@@ -31,7 +34,9 @@ const Range = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
 });
 
 Range.defaultProps = {
-  value: 3
+  value: 3,
+  min: 1,
+  max: 5
 } as Partial<Props>;
 
 export default Range;

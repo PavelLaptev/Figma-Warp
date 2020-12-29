@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////
 
 let logStyles = "border-radius: 4px; padding: 2px 4px;";
-let logTime = 1000;
+let logTime = 800;
 
 const log = {
   success: (text, show = true) => {

@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////
 
 const warpReposition = (warp, points) => {
-  const reposition = ([x, y, ...W], V = points) => {
+  const reposition = ([, , ...W], V = points) => {
     let nx = 0;
     let ny = 0;
 

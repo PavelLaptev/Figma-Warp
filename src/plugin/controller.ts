@@ -33,8 +33,16 @@ const init = async () => {
       data: await getSVG(node)
     });
   } else if (node && node.type !== "VECTOR") {
+    figma.ui.postMessage({
+      type: "svg-from-figma",
+      event: "error"
+    });
     log.warn("convert element to vector type");
   } else {
+    figma.ui.postMessage({
+      type: "svg-from-figma",
+      event: "error"
+    });
     log.error("Select some vector shape");
   }
 };
@@ -51,11 +59,12 @@ figma.on("selectionchange", () => {
   init();
 });
 
-figma.ui.onmessage = msg => {
+figma.ui.onmessage = async msg => {
+  // let node = figma.currentPage.selection[0];
+
   if (msg.type === "complexity") {
-    console.clear();
-    console.log("cleared by msg");
     init();
+    log.check(`Complexity: ${msg.data}`);
   }
 };
 

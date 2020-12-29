@@ -1,5 +1,6 @@
 import * as React from "react";
 import styles from "./app.module.scss";
+import placeholderSVG from "./assets/placeholderSVG";
 import Warp from "warpjs";
 import {
   createPointsArray,
@@ -11,6 +12,7 @@ import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import ControlDot from "./components/ControlDot";
 import Range from "./components/Range";
+import shortid from "shortid";
 
 gsap.registerPlugin(Draggable);
 
@@ -28,6 +30,7 @@ const App = ({}) => {
   ////////////////////////////////////////////////////////////////
   //////////////////////////// STATES ////////////////////////////
   ///////////////////////////////////////////////////////////////
+  const [appKey, setAppKey] = React.useState(shortid.generate());
   const [SVGfromFigma, setSVGfromFigma] = React.useState({
     htmlString: null as any,
     viewbox: "0 0 0 0" as string,
@@ -47,9 +50,19 @@ const App = ({}) => {
     // Check if we recieve Figma's SVG
     onmessage = event => {
       if (event.data.pluginMessage.type === "svg-from-figma") {
+        setAppKey(shortid.generate());
+
+        const isSelectedVectorShape = () => {
+          if (event.data.pluginMessage.event === "error") {
+            return placeholderSVG;
+          } else {
+            return event.data.pluginMessage.data;
+          }
+        };
+
         // Convert sttring to SVG DOM
         let SVGData = new DOMParser()
-          .parseFromString(event.data.pluginMessage.data, "image/svg+xml")
+          .parseFromString(isSelectedVectorShape(), "image/svg+xml")
           .getElementsByTagName("svg")[0];
 
         ///////////////////////////////////
@@ -67,7 +80,11 @@ const App = ({}) => {
             width: SVGData.width.baseVal.value,
             height: SVGData.height.baseVal.value
           },
-          points: points
+          points: createPointsArray(
+            SVGData.width.baseVal.value,
+            SVGData.height.baseVal.value,
+            Number(complexity)
+          )
         });
 
         /////////////////////////////////
@@ -96,8 +113,10 @@ const App = ({}) => {
             }
           });
         });
-
         //////////////////////////////////////////
+        // if (event.data.pluginMessage.event === "complexity") {
+        //   console.log("initialSVG");
+        // }
       }
     };
   }, [SVGfromFigma, complexity]);
@@ -108,25 +127,19 @@ const App = ({}) => {
 
   // console.log(SVGfromFigma);
   const handleComplexity = e => {
+    setAppKey(shortid.generate());
     setComplexity(e.target.value);
-    // let newPoints = createPointsArray(
-    //   SVGfromFigma.currentSize.width,
-    //   SVGfromFigma.currentSize.height,
-    //   Number(e.target.value)
-    // );
-    // console.log(newPoints);
-    // setSVGfromFigma({
-    //   ...SVGfromFigma,
-    //   points: newPoints
-    // });
-    parent.postMessage({ pluginMessage: { type: "complexity" } }, "*");
+    parent.postMessage(
+      { pluginMessage: { type: "complexity", data: e.target.value } },
+      "*"
+    );
   };
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// RENDER ////////////////////////////
   ////////////////////////////////////////////////////////////////
   return (
-    <div className={styles.app}>
+    <div className={styles.app} key={appKey}>
       <section className={styles.ui}>
         <Range value={complexity} onChange={handleComplexity} />
       </section>
