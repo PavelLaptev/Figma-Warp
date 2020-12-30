@@ -1,0 +1,129 @@
+import * as React from "react";
+
+interface Props {
+  panSpeedRatio?: number;
+}
+
+const PanZoom: React.FunctionComponent<Props> = props => {
+  const [spacePressed, setSpacePressed] = React.useState(false);
+  const [mouseKeyIsDown, setMouseKeyIsDown] = React.useState(false);
+  const [transform, setTransform] = React.useState({ scale: 1, x: 0, y: 0 });
+
+  // HANDLE ON MOUSE WHEEL (FOR TOUCHBAR)
+  const handleOnWheel = (e: any) => {
+    // DETECT PAN
+    if (e.deltaX !== 0 || e.deltaY !== 0) {
+      setTransform(prevState => ({
+        ...transform,
+        x: prevState.x - e.deltaX / props.panSpeedRatio,
+        y: prevState.y - e.deltaY / props.panSpeedRatio
+      }));
+    }
+
+    // DETECT PINCH
+    if (e.ctrlKey) {
+      if (transform.scale > 0.3 && transform.scale < 3) {
+        setTransform(prevState => ({
+          ...transform,
+          scale: prevState.scale - e.deltaY / 100
+        }));
+      } else if (transform.scale < 0.3) {
+        setTransform({
+          ...transform,
+          scale: 0.31
+        });
+      } else if (transform.scale > 3) {
+        setTransform({
+          ...transform,
+          scale: 2.95
+        });
+      }
+    }
+  };
+
+  // ON MOUSE MOVE
+  const handleOnMouseMove = (e: any) => {
+    if (spacePressed && mouseKeyIsDown) {
+      if (e.movementX !== 0 || e.movementY > 0) {
+        setTransform(prevState => ({
+          ...transform,
+          x: prevState.x + e.movementX / props.panSpeedRatio,
+          y: prevState.y + e.movementY / props.panSpeedRatio
+        }));
+      }
+    }
+  };
+
+  // ON SPACE PRESSED
+  const handleOnKeyDown = (e: any) => {
+    if (e.keyCode === 32) {
+      setSpacePressed(true);
+    }
+  };
+
+  const handleOnKeyUp = () => {
+    setSpacePressed(false);
+  };
+
+  // ON MOUSE PRESSED
+  const handleOnKeyMouseDown = (e: any) => {
+    if (e.which === 1) {
+      setMouseKeyIsDown(true);
+    }
+  };
+
+  const handleOnKeyMouseUp = (e: any) => {
+    if (e.which === 1) {
+      setMouseKeyIsDown(false);
+    }
+  };
+
+  // USE EFFECT
+  React.useEffect(() => {
+    document.addEventListener("keydown", handleOnKeyDown, false);
+    document.addEventListener("keyup", handleOnKeyUp, false);
+    document.addEventListener("mousedown", handleOnKeyMouseDown, false);
+    document.addEventListener("mouseup", handleOnKeyMouseUp, false);
+
+    return () => {
+      document.removeEventListener("keydown", handleOnKeyDown, false);
+      document.removeEventListener("keyup", handleOnKeyUp, false);
+      document.removeEventListener("mousedown", handleOnKeyMouseDown, false);
+      document.removeEventListener("mouseup", handleOnKeyMouseUp, false);
+    };
+  });
+
+  return (
+    <div
+      style={{
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        background: "rgba(0,0,0,0.1)",
+        width: "100%",
+        height: "100%"
+      }}
+      onWheel={handleOnWheel}
+      onMouseMove={handleOnMouseMove}
+    >
+      <div
+        style={{
+          border: "3px solid #0044ff",
+          width: "fit-content",
+          height: "fit-content",
+          transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`
+        }}
+      >
+        {props.children}
+      </div>
+    </div>
+  );
+};
+
+PanZoom.defaultProps = {
+  panSpeedRatio: 1.4
+} as Partial<Props>;
+
+export default PanZoom;

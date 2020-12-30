@@ -1,6 +1,7 @@
 import * as React from "react";
 import styles from "./app.module.scss";
 import placeholderSVG from "./assets/placeholderSVG";
+import PanZoom from "./components/PanZoom/";
 import Warp from "warpjs";
 import {
   createPointsArray,
@@ -143,45 +144,47 @@ const App = ({}) => {
       <section className={styles.ui}>
         <Range value={complexity} onChange={handleComplexity} />
       </section>
-      <section className={styles.view}>
-        <div
-          className={styles.SVG_wrapper}
-          ref={SVGContainerRef}
-          style={{
-            width: `${SVGfromFigma.currentSize.width}px`,
-            height: `${SVGfromFigma.currentSize.height}px`
-          }}
-        >
-          <svg
-            className={styles.SVG_controls}
-            id="svg-control"
-            ref={SVGControlContainerRef}
+      <PanZoom>
+        <section className={styles.view}>
+          <div
+            className={styles.SVG_wrapper}
+            ref={SVGContainerRef}
+            style={{
+              width: `${SVGfromFigma.currentSize.width}px`,
+              height: `${SVGfromFigma.currentSize.height}px`
+            }}
           >
-            <path
-              ref={SVGControlPath}
-              id="control-path"
-              className={styles.SVG_path}
+            <svg
+              className={styles.SVG_controls}
+              id="svg-control"
+              ref={SVGControlContainerRef}
+            >
+              <path
+                ref={SVGControlPath}
+                id="control-path"
+                className={styles.SVG_path}
+              />
+              <g ref={SVGControlDots}>
+                {SVGfromFigma.points.map((item, i) => {
+                  return (
+                    <ControlDot
+                      SVGKey={SVGfromFigma.htmlString}
+                      key={`dot-${i}`}
+                      position={{ x: item[0], y: item[1] }}
+                    />
+                  );
+                })}
+              </g>
+            </svg>
+            <svg
+              className={styles.SVG_container}
+              viewBox={SVGfromFigma.viewbox}
+              ref={SVGElementRef}
+              dangerouslySetInnerHTML={{ __html: SVGfromFigma.htmlString }}
             />
-            <g ref={SVGControlDots}>
-              {SVGfromFigma.points.map((item, i) => {
-                return (
-                  <ControlDot
-                    SVGKey={SVGfromFigma.htmlString}
-                    key={`dot-${i}`}
-                    position={{ x: item[0], y: item[1] }}
-                  />
-                );
-              })}
-            </g>
-          </svg>
-          <svg
-            className={styles.SVG_container}
-            viewBox={SVGfromFigma.viewbox}
-            ref={SVGElementRef}
-            dangerouslySetInnerHTML={{ __html: SVGfromFigma.htmlString }}
-          />
-        </div>
-      </section>
+          </div>
+        </section>
+      </PanZoom>
     </div>
   );
 };
