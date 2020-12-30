@@ -25,10 +25,10 @@
   &_wrapper {
     overflow: visible;
     position: relative;
-    background-color: rgba(0, 0, 0, 0.1);
+    // background-color: rgba(0, 0, 0, 0.1);
   }
   &_container {
-    z-index: 1;
+    z-index: 10;
     overflow: visible;
     pointer-events: none;
     position: relative;
@@ -36,25 +36,24 @@
     height: 100%;
     fill: none;
   }
+  &_dotsContainer {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
   &_controls {
-    z-index: 10;
+    z-index: 20;
     overflow: visible;
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
   }
-  &_controlItem {
-    fill: #f45;
-    &:hover {
-      fill: rgb(47, 209, 109);
-    }
-    &:active {
-      fill: rgb(68, 112, 255);
-    }
-  }
   &_path {
+    // fill: rgba(0, 0, 0, 0.05);
     fill: none;
-    stroke: #f45;
+    stroke: rgba(0, 0, 0, 0.3);
   }
 }
 

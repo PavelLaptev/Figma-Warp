@@ -23,7 +23,6 @@ const App = ({}) => {
   //////////////////////////// REFS ////////////////////////////
   ///////////////////////////////////////////////////////////////
   const SVGContainerRef = React.useRef(null);
-  const SVGControlContainerRef = React.useRef(null);
   const SVGElementRef = React.useRef(null);
   const SVGControlPath = React.useRef(null);
   const SVGControlDots = React.useRef(null);
@@ -156,34 +155,32 @@ const App = ({}) => {
               height: `${SVGfromFigma.currentSize.height}px`
             }}
           >
-            <svg
-              className={styles.SVG_controls}
-              id="svg-control"
-              ref={SVGControlContainerRef}
-            >
-              <path
-                ref={SVGControlPath}
-                id="control-path"
-                className={styles.SVG_path}
-              />
-              <g ref={SVGControlDots}>
-                {SVGfromFigma.points.map((item, i) => {
-                  return (
-                    <ControlDot
-                      SVGKey={SVGfromFigma.htmlString}
-                      key={`dot-${i}`}
-                      position={{ x: item[0], y: item[1] }}
-                    />
-                  );
-                })}
-              </g>
-            </svg>
+            <div ref={SVGControlDots} className={styles.SVG_dotsContainer}>
+              {SVGfromFigma.points.map((item, i) => {
+                return (
+                  <ControlDot
+                    SVGKey={SVGfromFigma.htmlString}
+                    key={`dot-${i}`}
+                    position={{ x: item[0], y: item[1] }}
+                  />
+                );
+              })}
+            </div>
+
             <svg
               className={styles.SVG_container}
               viewBox={SVGfromFigma.viewbox}
               ref={SVGElementRef}
               dangerouslySetInnerHTML={{ __html: SVGfromFigma.htmlString }}
             />
+
+            <svg className={styles.SVG_controls} id="svg-control">
+              <path
+                ref={SVGControlPath}
+                id="control-path"
+                className={styles.SVG_path}
+              />
+            </svg>
           </div>
         </section>
       </PanZoom>

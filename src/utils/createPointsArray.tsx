@@ -29,7 +29,7 @@ const createPointsArray = (width, height, amount) => {
     ...topSideDots
   ];
 
-  const controlBuffer = 5;
+  const controlBuffer = 10;
   for (let i = 0; i < dotsArray.length; i++) {
     if (dotsArray[i][0] === 0) dotsArray[i][0] -= controlBuffer;
     if (dotsArray[i][1] === 0) dotsArray[i][1] -= controlBuffer;
