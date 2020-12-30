@@ -27,6 +27,8 @@ const App = ({}) => {
   const SVGElementRef = React.useRef(null);
   const SVGControlPath = React.useRef(null);
   const SVGControlDots = React.useRef(null);
+  //
+  const panZommRef = React.useRef(null);
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// STATES ////////////////////////////
@@ -48,6 +50,7 @@ const App = ({}) => {
   ////////////////////////// USE EFFECT //////////////////////////
   ///////////////////////////////////////////////////////////////
   React.useEffect(() => {
+    // panZommRef.current.getTransform();
     // Check if we recieve Figma's SVG
     onmessage = event => {
       if (event.data.pluginMessage.type === "svg-from-figma") {
@@ -102,22 +105,22 @@ const App = ({}) => {
             type: "x,y",
             onDrag: function() {
               let relativeX =
-                this.pointerX -
-                SVGContainerRef.current.getBoundingClientRect().left;
+                (this.pointerX -
+                  SVGContainerRef.current.getBoundingClientRect().left) /
+                panZommRef.current.getScale();
               let relativeY =
-                this.pointerY -
-                SVGContainerRef.current.getBoundingClientRect().top;
+                (this.pointerY -
+                  SVGContainerRef.current.getBoundingClientRect().top) /
+                panZommRef.current.getScale();
               points[i] = [relativeX, relativeY];
 
+              console.log(panZommRef.current.getScale());
               warpReposition(warp, points);
               updateControlPath(SVGControlPath, points);
             }
           });
         });
         //////////////////////////////////////////
-        // if (event.data.pluginMessage.event === "complexity") {
-        //   console.log("initialSVG");
-        // }
       }
     };
   }, [SVGfromFigma, complexity]);
@@ -144,7 +147,7 @@ const App = ({}) => {
       <section className={styles.ui}>
         <Range value={complexity} onChange={handleComplexity} />
       </section>
-      <PanZoom>
+      <PanZoom ref={panZommRef}>
         <section className={styles.view}>
           <div
             className={styles.SVG_wrapper}

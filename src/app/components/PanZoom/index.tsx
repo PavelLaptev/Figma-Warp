@@ -1,13 +1,30 @@
 import * as React from "react";
 
 interface Props {
+  children?: any;
   panSpeedRatio?: number;
 }
 
-const PanZoom: React.FunctionComponent<Props> = props => {
+interface RefObject {
+  getScale: (val) => void;
+}
+
+const round = (num, decimalPlaces = 0) => {
+  let p = Math.pow(10, decimalPlaces);
+  let m = num * p * (1 + Number.EPSILON);
+  return Math.round(m) / p;
+};
+
+const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
   const [spacePressed, setSpacePressed] = React.useState(false);
   const [mouseKeyIsDown, setMouseKeyIsDown] = React.useState(false);
   const [transform, setTransform] = React.useState({ scale: 1, x: 0, y: 0 });
+
+  React.useImperativeHandle(ref, () => ({
+    getScale() {
+      return transform.scale;
+    }
+  }));
 
   // HANDLE ON MOUSE WHEEL (FOR TOUCHBAR)
   const handleOnWheel = (e: any) => {
@@ -25,14 +42,14 @@ const PanZoom: React.FunctionComponent<Props> = props => {
       if (transform.scale > 0.3 && transform.scale < 3) {
         setTransform(prevState => ({
           ...transform,
-          scale: prevState.scale - e.deltaY / 100
+          scale: round(prevState.scale - e.deltaY / 100, 3)
         }));
-      } else if (transform.scale < 0.3) {
+      } else if (transform.scale <= 0.3) {
         setTransform({
           ...transform,
           scale: 0.31
         });
-      } else if (transform.scale > 3) {
+      } else if (transform.scale >= 3) {
         setTransform({
           ...transform,
           scale: 2.95
@@ -101,7 +118,7 @@ const PanZoom: React.FunctionComponent<Props> = props => {
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
-        background: "rgba(0,0,0,0.1)",
+        // background: "rgba(0,0,0,0.1)",
         width: "100%",
         height: "100%"
       }}
@@ -109,8 +126,9 @@ const PanZoom: React.FunctionComponent<Props> = props => {
       onMouseMove={handleOnMouseMove}
     >
       <div
+        ref={ref as any}
         style={{
-          border: "3px solid #0044ff",
+          // border: "3px solid #0044ff",
           width: "fit-content",
           height: "fit-content",
           transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`
@@ -120,7 +138,7 @@ const PanZoom: React.FunctionComponent<Props> = props => {
       </div>
     </div>
   );
-};
+});
 
 PanZoom.defaultProps = {
   panSpeedRatio: 1.4
