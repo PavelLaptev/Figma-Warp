@@ -7,7 +7,8 @@ import {
   createPointsArray,
   warpIt,
   warpReposition,
-  updateControlPath
+  updateControlPath,
+  sendPaths
 } from "../utils";
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
@@ -115,6 +116,8 @@ const App = ({}) => {
 
               warpReposition(warp, points);
               updateControlPath(SVGControlPath, points);
+
+              sendPaths(warp.element);
             }
           });
         });

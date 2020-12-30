@@ -60,20 +60,18 @@ figma.on("selectionchange", () => {
 });
 
 figma.ui.onmessage = async msg => {
+  let node = figma.currentPage.selection[0] as VectorNode;
+
   if (msg.type === "complexity") {
     console.clear();
     init();
     log.check(`Complexity: ${msg.data}`);
   }
+
+  if (msg.type === "warped-svg" && node) {
+    let nodeFromSVG = figma.createNodeFromSvg(msg.data);
+
+    node.vectorPaths = figma.flatten(nodeFromSVG.children).vectorPaths;
+    nodeFromSVG.remove();
+  }
 };
-
-// figma.ui.onmessage = msg => {
-//   let node = figma.currentPage.selection[0];
-//   if (node) {
-//     log("selected");
-//   } else {
-//     log("not selected");
-//   }
-// };
-
-// TO-DO
