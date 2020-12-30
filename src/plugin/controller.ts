@@ -60,9 +60,8 @@ figma.on("selectionchange", () => {
 });
 
 figma.ui.onmessage = async msg => {
-  // let node = figma.currentPage.selection[0];
-
   if (msg.type === "complexity") {
+    console.clear();
     init();
     log.check(`Complexity: ${msg.data}`);
   }

@@ -114,7 +114,6 @@ const App = ({}) => {
                 panZommRef.current.getScale();
               points[i] = [relativeX, relativeY];
 
-              console.log(panZommRef.current.getScale());
               warpReposition(warp, points);
               updateControlPath(SVGControlPath, points);
             }
