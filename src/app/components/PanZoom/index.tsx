@@ -112,6 +112,7 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
 
   return (
     <div
+      id="pan-zoom-wrapper"
       style={{
         overflow: "hidden",
         display: "flex",
@@ -127,6 +128,10 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
     >
       <div
         ref={ref as any}
+        id="pan-zoom-element"
+        data-scale={transform.scale}
+        data-pos-x={transform.x}
+        data-pos-y={transform.y}
         style={{
           // border: "3px solid #0044ff",
           width: "fit-content",

@@ -162,7 +162,6 @@ const App = ({}) => {
               {SVGfromFigma.points.map((item, i) => {
                 return (
                   <ControlDot
-                    SVGKey={SVGfromFigma.htmlString}
                     key={`dot-${i}`}
                     position={{ x: item[0], y: item[1] }}
                   />
