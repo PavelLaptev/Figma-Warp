@@ -158,7 +158,11 @@ const App = ({}) => {
               height: `${SVGfromFigma.currentSize.height}px`
             }}
           >
-            <div ref={SVGControlDots} className={styles.SVG_dotsContainer}>
+            <div
+              ref={SVGControlDots}
+              className={styles.SVG_dotsContainer}
+              id="svg-dot-container"
+            >
               {SVGfromFigma.points.map((item, i) => {
                 return (
                   <ControlDot
@@ -176,7 +180,7 @@ const App = ({}) => {
               dangerouslySetInnerHTML={{ __html: SVGfromFigma.htmlString }}
             />
 
-            <svg className={styles.SVG_controls} id="svg-control">
+            <svg className={styles.SVG_controlPath}>
               <path
                 ref={SVGControlPath}
                 id="control-path"

@@ -2,7 +2,7 @@
 // Please do not change this file!
 interface CssExports {
   SVG_container: string;
-  SVG_controls: string;
+  SVG_controlPath: string;
   SVG_dotsContainer: string;
   SVG_path: string;
   SVG_wrapper: string;

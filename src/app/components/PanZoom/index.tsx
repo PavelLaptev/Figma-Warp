@@ -1,4 +1,5 @@
 import * as React from "react";
+import PanZoomprovider from "./PanZoomProvider";
 
 interface Props {
   children?: any;
@@ -39,20 +40,20 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
 
     // DETECT PINCH
     if (e.ctrlKey) {
-      if (transform.scale > 0.3 && transform.scale < 3) {
+      if (transform.scale > 0.4 && transform.scale < 2) {
         setTransform(prevState => ({
           ...transform,
           scale: round(prevState.scale - e.deltaY / 100, 3)
         }));
-      } else if (transform.scale <= 0.3) {
+      } else if (transform.scale <= 0.4) {
         setTransform({
           ...transform,
-          scale: 0.31
+          scale: 0.41
         });
-      } else if (transform.scale >= 3) {
+      } else if (transform.scale >= 2) {
         setTransform({
           ...transform,
-          scale: 2.95
+          scale: 1.95
         });
       }
     }
@@ -111,37 +112,39 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
   });
 
   return (
-    <div
-      id="pan-zoom-wrapper"
-      style={{
-        overflow: "hidden",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-        // background: "rgba(0,0,0,0.1)",
-        width: "100%",
-        height: "100%"
-      }}
-      onWheel={handleOnWheel}
-      onMouseMove={handleOnMouseMove}
-    >
+    <PanZoomprovider.Provider value={transform.scale}>
       <div
-        ref={ref as any}
-        id="pan-zoom-element"
-        data-scale={transform.scale}
-        data-pos-x={transform.x}
-        data-pos-y={transform.y}
+        id="pan-zoom-wrapper"
         style={{
-          // border: "3px solid #0044ff",
-          width: "fit-content",
-          height: "fit-content",
-          transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          // background: "rgba(0,0,0,0.1)",
+          width: "100%",
+          height: "100%"
         }}
+        onWheel={handleOnWheel}
+        onMouseMove={handleOnMouseMove}
       >
-        {props.children}
+        <div
+          ref={ref as any}
+          id="pan-zoom-element"
+          data-scale={transform.scale}
+          data-pos-x={transform.x}
+          data-pos-y={transform.y}
+          style={{
+            // border: "3px solid #0044ff",
+            width: "fit-content",
+            height: "fit-content",
+            transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`
+          }}
+        >
+          {props.children}
+        </div>
       </div>
-    </div>
+    </PanZoomprovider.Provider>
   );
 });
 
