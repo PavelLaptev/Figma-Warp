@@ -1,5 +1,6 @@
 import * as React from "react";
-import styles from "./app.module.scss";
+import appstyles from "./app.module.scss";
+import uistyles from "./uistyles.module.scss";
 import placeholderSVG from "./assets/placeholderSVG";
 import PanZoom from "./components/PanZoom/";
 import Warp from "warpjs";
@@ -14,6 +15,7 @@ import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import ControlDot from "./components/ControlDot";
 import Range from "./components/Range";
+import Toggler from "./components/Toggler";
 import shortid from "shortid";
 
 gsap.registerPlugin(Draggable);
@@ -29,6 +31,7 @@ const App = ({}) => {
   const SVGControlDots = React.useRef(null);
   //
   const panZommRef = React.useRef(null);
+  const realTimeChangesRef = React.useRef(null);
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// STATES ////////////////////////////
@@ -45,6 +48,7 @@ const App = ({}) => {
   });
 
   const [complexity, setComplexity] = React.useState(2);
+  const [realtimeChanges, setRealtimeChanges] = React.useState(false);
 
   ////////////////////////////////////////////////////////////////
   ////////////////////////// USE EFFECT //////////////////////////
@@ -117,7 +121,9 @@ const App = ({}) => {
               warpReposition(warp, points);
               updateControlPath(SVGControlPath, points);
 
-              sendPaths(warp.element);
+              realTimeChangesRef.current.checked
+                ? sendPaths(warp.element)
+                : false;
             }
           });
         });
@@ -130,7 +136,6 @@ const App = ({}) => {
   ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
 
-  // console.log(SVGfromFigma);
   const handleComplexity = e => {
     setAppKey(shortid.generate());
     setComplexity(e.target.value);
@@ -140,18 +145,51 @@ const App = ({}) => {
     );
   };
 
+  const handleRealtimeChanges = e => {
+    setRealtimeChanges(e.target.checked);
+  };
+
+  const applyResults = () => {
+    sendPaths(SVGElementRef.current);
+  };
+
+  ////////////////////////////////////////////////////////////////
+  ///////////////////////// UI CONTROLS //////////////////////////
+  ////////////////////////////////////////////////////////////////
+
+  const UIcontrols = () => {
+    return (
+      <section className={uistyles.wrapper}>
+        <section>
+          <Range value={complexity} onChange={handleComplexity} />
+          <Toggler
+            ref={realTimeChangesRef}
+            checked={realtimeChanges}
+            onChange={handleRealtimeChanges}
+          />
+        </section>
+        <button
+          onClick={applyResults}
+          style={{
+            display: realtimeChanges ? "none" : "block"
+          }}
+        >
+          Apply
+        </button>
+      </section>
+    );
+  };
+
   ////////////////////////////////////////////////////////////////
   //////////////////////////// RENDER ////////////////////////////
   ////////////////////////////////////////////////////////////////
   return (
-    <div className={styles.app} key={appKey}>
-      <section className={styles.ui}>
-        <Range value={complexity} onChange={handleComplexity} />
-      </section>
+    <div className={appstyles.app} key={appKey}>
+      <UIcontrols />
       <PanZoom ref={panZommRef}>
-        <section className={styles.view}>
+        <section className={appstyles.view}>
           <div
-            className={styles.SVG_wrapper}
+            className={appstyles.SVG_wrapper}
             ref={SVGContainerRef}
             style={{
               width: `${SVGfromFigma.currentSize.width}px`,
@@ -160,7 +198,7 @@ const App = ({}) => {
           >
             <div
               ref={SVGControlDots}
-              className={styles.SVG_dotsContainer}
+              className={appstyles.SVG_dotsContainer}
               id="svg-dot-container"
             >
               {SVGfromFigma.points.map((item, i) => {
@@ -174,17 +212,17 @@ const App = ({}) => {
             </div>
 
             <svg
-              className={styles.SVG_container}
+              className={appstyles.SVG_container}
               viewBox={SVGfromFigma.viewbox}
               ref={SVGElementRef}
               dangerouslySetInnerHTML={{ __html: SVGfromFigma.htmlString }}
             />
 
-            <svg className={styles.SVG_controlPath}>
+            <svg className={appstyles.SVG_controlPath}>
               <path
                 ref={SVGControlPath}
                 id="control-path"
-                className={styles.SVG_path}
+                className={appstyles.SVG_path}
               />
             </svg>
           </div>

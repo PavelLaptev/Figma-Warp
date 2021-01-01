@@ -7,7 +7,6 @@ interface CssExports {
   SVG_path: string;
   SVG_wrapper: string;
   app: string;
-  ui: string;
   view: string;
 }
 export const cssExports: CssExports;

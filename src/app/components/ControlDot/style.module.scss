@@ -11,7 +11,7 @@
     justify-content: center;
     &:hover {
       .dot_svg_thumb {
-        fill: var(--accent-clr);
+        fill: var(--primary-clr);
       }
       .dot_svg_cross {
         stroke: var(--space-clr);
@@ -33,7 +33,7 @@
       transition: fill 0.1s ease-in-out;
     }
     &_cross {
-      stroke: var(--accent-clr);
+      stroke: var(--primary-clr);
       transition: stroke 0.1s ease-in-out;
     }
   }
