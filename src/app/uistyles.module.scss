@@ -1,9 +1,36 @@
 .wrapper {
   position: absolute;
   z-index: 999;
-  padding: 20px;
-  background: white;
-  background: rgba(0, 0, 0, 0.1);
   bottom: 16px;
   right: 16px;
+
+  display: flex;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.settings {
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+
+  border: 1px solid var(--primary-clr);
+  padding: 8px;
+  background: var(--space-clr);
+}
+
+.header {
+  display: flex;
+  h4 {
+    padding: 8px;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary-clr);
+  }
 }

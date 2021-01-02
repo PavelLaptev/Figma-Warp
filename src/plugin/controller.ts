@@ -62,10 +62,8 @@ figma.on("selectionchange", () => {
 figma.ui.onmessage = async msg => {
   let node = figma.currentPage.selection[0] as VectorNode;
 
-  if (msg.type === "complexity") {
-    console.clear();
+  if (msg.type === "settings-changes") {
     init();
-    log.check(`Complexity: ${msg.data}`);
   }
 
   if (msg.type === "warped-svg" && node) {

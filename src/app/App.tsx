@@ -48,6 +48,7 @@ const App = ({}) => {
   });
 
   const [complexity, setComplexity] = React.useState(2);
+  const [Interpolation, setInterpolation] = React.useState(1);
   const [realtimeChanges, setRealtimeChanges] = React.useState(false);
 
   ////////////////////////////////////////////////////////////////
@@ -97,8 +98,19 @@ const App = ({}) => {
 
         /////////////////////////////////
 
+        const convertInterpolationValue = value => {
+          let numValue = Number(value);
+          if (numValue === 1) {
+            return 500;
+          } else if (numValue === 2) {
+            return 100;
+          } else if (numValue === 3) {
+            return 10;
+          }
+        };
+
         const warp = new Warp(SVGElementRef.current);
-        warp.interpolate(500);
+        warp.interpolate(convertInterpolationValue(Interpolation));
 
         warpIt(warp, points);
         warpReposition(warp, points);
@@ -130,19 +142,27 @@ const App = ({}) => {
         //////////////////////////////////////////
       }
     };
-  }, [SVGfromFigma, complexity]);
+  }, [SVGfromFigma, complexity, Interpolation]);
 
   ////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////
+  ////////////////////// HANDLE FUNCTIONS ////////////////////////
   ////////////////////////////////////////////////////////////////
 
-  const handleComplexity = e => {
+  const handleSettingsChanged = (value, setState) => {
     setAppKey(shortid.generate());
-    setComplexity(e.target.value);
+    setState(value);
     parent.postMessage(
-      { pluginMessage: { type: "complexity", data: e.target.value } },
+      { pluginMessage: { type: "settings-changes", data: value } },
       "*"
     );
+  };
+
+  const handleComplexity = (e, setState) => {
+    handleSettingsChanged(e.target.value, setState);
+  };
+
+  const handleInterpolation = (e, setState) => {
+    handleSettingsChanged(e.target.value, setState);
   };
 
   const handleRealtimeChanges = e => {
@@ -160,8 +180,31 @@ const App = ({}) => {
   const UIcontrols = () => {
     return (
       <section className={uistyles.wrapper}>
-        <section>
-          <Range value={complexity} onChange={handleComplexity} />
+        <section className={uistyles.settings}>
+          <header className={uistyles.header}>
+            <h4>Settings</h4>
+          </header>
+          <Range
+            value={complexity}
+            onChange={e => handleComplexity(e, setComplexity)}
+            max={5}
+            valuesName={[
+              "4 pooints",
+              "8 points",
+              "12 points",
+              "16 points",
+              "20 points"
+            ]}
+            name="Complexity"
+          />
+          <Range
+            value={Interpolation}
+            onChange={e => handleInterpolation(e, setInterpolation)}
+            max={3}
+            valuesName={["Low", "Middle", "High"]}
+            name="Interpolation"
+            errMsg={"High interpolation lowers performance"}
+          />
           <Toggler
             ref={realTimeChangesRef}
             checked={realtimeChanges}
