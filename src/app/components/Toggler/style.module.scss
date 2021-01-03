@@ -1,0 +1,57 @@
+@import "../../styles/mixins";
+
+.wrapper {
+  @include control-block;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.label {
+  @include label;
+  height: 100%;
+  flex: 1;
+  span {
+    height: 100%;
+  }
+}
+
+.toggler {
+  position: relative;
+  width: 32px;
+  height: var(--controls-height);
+  background-color: var(--space-clr);
+  border: 1px solid var(--primary-clr);
+  input[type="checkbox"] {
+    opacity: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+  &:before {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    content: "";
+    display: block;
+    width: calc(var(--controls-height) - 8px);
+    height: calc(var(--controls-height) - 8px);
+    background-color: var(--primary-clr);
+    transform: translateX(0);
+  }
+  &_active {
+    background-color: var(--primary-clr);
+    &:before {
+      background-color: var(--space-clr);
+      transform: translateX(12px);
+    }
+  }
+}
+
+.msg {
+  @include caption;
+}

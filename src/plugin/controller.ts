@@ -71,5 +71,7 @@ figma.ui.onmessage = async msg => {
 
     node.vectorPaths = figma.flatten(nodeFromSVG.children).vectorPaths;
     nodeFromSVG.remove();
+  } else if (msg.type === "warped-svg" && !node) {
+    log.error("Select some vector shape");
   }
 };

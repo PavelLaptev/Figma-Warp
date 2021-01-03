@@ -1,3 +1,25 @@
+.lightTheme {
+  --primary-clr: #000;
+  --space-clr: #fff;
+  --neutral-clr: #e0e0e0;
+  --block-hover: rgba(0, 0, 0, 0.05);
+  --canvas-clr: white;
+  --path-clr: rgba(0, 0, 0, 0.2);
+}
+
+.darkTheme {
+  --primary-clr: rgb(255, 255, 255);
+  --space-clr: rgb(0, 0, 0);
+  --neutral-clr: #797979;
+  --block-hover: rgba(255, 255, 255, 0.1);
+  --canvas-clr: #222222;
+  --path-clr: rgba(255, 255, 255, 0.2);
+}
+
+///////////////////////////////
+///////////////////////////////
+///////////////////////////////
+
 .app {
   position: relative;
 }
@@ -53,6 +75,6 @@
   &_path {
     // fill: rgba(0, 0, 0, 0.05);
     fill: none;
-    stroke: rgba(0, 0, 0, 0.3);
+    stroke: var(--path-clr);
   }
 }

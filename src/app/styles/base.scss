@@ -1,5 +1,15 @@
-@import "./tokens";
 @import "./font-face";
+
+:root {
+  --active-clr: #5f48f9;
+  --error-clr: #ff3f3f;
+  //
+  --small-radius: 4px;
+  --middle-radius: 8px;
+  --large-radius: 20px;
+  //
+  --controls-height: 20px;
+}
 
 *,
 *:before,

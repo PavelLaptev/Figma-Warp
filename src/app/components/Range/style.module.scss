@@ -1,21 +1,12 @@
+@import "../../styles/mixins";
+
 .wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-  transition: background-color 0.1s ease;
-  margin-bottom: 2px;
-  &:hover {
-    background-color: var(--block-hover);
-  }
+  @include control-block;
 }
 
 .label {
-  text-transform: uppercase;
+  @include label;
   margin: 0 0 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--primary-clr);
 }
 
 .segments {
@@ -32,7 +23,7 @@
     position: absolute;
     width: 2px;
     height: 100%;
-    background-color: var(--space-clr);
+    background-color: var(--neutral-clr);
   }
 }
 
@@ -46,6 +37,7 @@
     -webkit-appearance: none;
     appearance: none;
     border: 1px solid var(--primary-clr);
+    background-color: var(--space-clr);
   }
 
   [type="range"]::-webkit-slider-thumb {
@@ -59,8 +51,6 @@
   }
 }
 
-.errMsg {
-  margin: 8px 0 4px;
-  font-size: 12px;
-  color: var(--error-clr);
+.msg {
+  @include caption;
 }

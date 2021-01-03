@@ -6,9 +6,9 @@ interface Props {
   min?: number;
   max?: number;
   step?: number;
-  name?: string;
+  label?: string;
   valuesName?: string[];
-  errMsg?: string;
+  msg?: string;
   onChange?(event: React.FormEvent<HTMLInputElement>): void;
 }
 
@@ -34,8 +34,8 @@ const Range = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
 
   return (
     <div className={styles.wrapper}>
-      <label className={styles.label} htmlFor={props.name}>
-        <span style={{ opacity: 0.4 }}>{props.name}:</span>{" "}
+      <label className={styles.label} htmlFor={props.label}>
+        <span style={{ opacity: 0.4 }}>{props.label}:</span>{" "}
         <span>{`${isValueNameMatch(props.valuesName)}`}</span>
       </label>
       <div className={styles.input}>
@@ -55,7 +55,7 @@ const Range = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
             })}
         </div>
         <input
-          name={props.name}
+          id={props.label}
           ref={ref as any}
           type="range"
           min={props.min}
@@ -65,7 +65,7 @@ const Range = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
           onChange={handleChange}
         />
       </div>
-      {props.errMsg ? <p className={styles.errMsg}>{props.errMsg}</p> : null}
+      {props.msg ? <p className={styles.msg}>{props.msg}</p> : null}
     </div>
   );
 });
@@ -74,9 +74,9 @@ Range.defaultProps = {
   value: 3,
   min: 1,
   max: 4,
-  name: "Label",
+  label: "Label",
   valuesName: ["value 1", "value 2", "value 3", "value 4"],
-  errMsg: null
+  msg: null
 } as Partial<Props>;
 
 export default Range;

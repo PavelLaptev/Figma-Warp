@@ -50,6 +50,8 @@ const App = ({}) => {
   const [complexity, setComplexity] = React.useState(2);
   const [Interpolation, setInterpolation] = React.useState(1);
   const [realtimeChanges, setRealtimeChanges] = React.useState(false);
+  const [darkThemeState, setDarkThemeState] = React.useState(false);
+  const [showSettingsState, setShowSettingsState] = React.useState(false);
 
   ////////////////////////////////////////////////////////////////
   ////////////////////////// USE EFFECT //////////////////////////
@@ -180,9 +182,18 @@ const App = ({}) => {
   const UIcontrols = () => {
     return (
       <section className={uistyles.wrapper}>
-        <section className={uistyles.settings}>
+        <section
+          className={uistyles.settings}
+          style={{ display: showSettingsState ? "flex" : "none" }}
+        >
           <header className={uistyles.header}>
             <h4>Settings</h4>
+            <div
+              onClick={() => {
+                setShowSettingsState(!showSettingsState);
+              }}
+              className={uistyles.closeButton}
+            ></div>
           </header>
           <Range
             value={complexity}
@@ -195,29 +206,64 @@ const App = ({}) => {
               "16 points",
               "20 points"
             ]}
-            name="Complexity"
+            label="Complexity"
           />
           <Range
             value={Interpolation}
             onChange={e => handleInterpolation(e, setInterpolation)}
             max={3}
             valuesName={["Low", "Middle", "High"]}
-            name="Interpolation"
-            errMsg={"High interpolation lowers performance"}
+            label="Interpolation"
+            msg={"⚠ High interpolation lowers performance speed"}
           />
           <Toggler
+            name={"darkmode"}
+            label={"Dark Mode"}
+            checked={darkThemeState}
+            onChange={(e: any) => {
+              setDarkThemeState(e.target.checked);
+            }}
+          />
+          <Toggler
+            name={"realtime-changes"}
+            label={"Realtime changes"}
             ref={realTimeChangesRef}
             checked={realtimeChanges}
             onChange={handleRealtimeChanges}
+            msg={
+              "⚠ The plugin will reflect all changes in real-time. Complex shapes could cause low performance."
+            }
           />
         </section>
         <button
           onClick={applyResults}
+          className={uistyles.button}
           style={{
+            marginRight: "6px",
             display: realtimeChanges ? "none" : "block"
           }}
         >
-          Apply
+          Apply results
+        </button>
+        <button
+          onClick={() => {
+            setShowSettingsState(!showSettingsState);
+          }}
+          className={`${uistyles.button} ${
+            showSettingsState ? uistyles.button_active : null
+          }`}
+        >
+          <svg
+            className={uistyles.settingsIcon}
+            viewBox="0 0 20 19"
+            fill="none"
+          >
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M11.259 2.72282V0H8.18689V2.72285L4.30707 5.00742L1.81436 3.51855L0.222965 6.08467L2.77548 7.60926V11.3919L0.222961 12.9165L1.81435 15.4826L4.30773 13.9933L8.18689 16.2775V19H11.259V16.2775L15.1382 13.9933L17.6316 15.4826L19.223 12.9165L16.6705 11.3919V7.60924L19.223 6.08467L17.6316 3.51855L15.1389 5.00741L11.259 2.72282ZM5.84759 7.6035L9.72297 5.32155L13.5984 7.6035V11.3969L9.72297 13.6788L5.84759 11.3969V7.6035Z"
+            />
+          </svg>
         </button>
       </section>
     );
@@ -227,7 +273,12 @@ const App = ({}) => {
   //////////////////////////// RENDER ////////////////////////////
   ////////////////////////////////////////////////////////////////
   return (
-    <div className={appstyles.app} key={appKey}>
+    <div
+      className={`${appstyles.app} ${
+        darkThemeState ? appstyles.darkTheme : appstyles.lightTheme
+      }`}
+      key={appKey}
+    >
       <UIcontrols />
       <PanZoom ref={panZommRef}>
         <section className={appstyles.view}>

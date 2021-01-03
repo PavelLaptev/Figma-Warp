@@ -121,7 +121,7 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
           alignItems: "center",
           justifyContent: "center",
           position: "relative",
-          // background: "rgba(0,0,0,0.1)",
+          background: "var(--canvas-clr)",
           width: "100%",
           height: "100%"
         }}

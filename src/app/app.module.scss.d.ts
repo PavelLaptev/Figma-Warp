@@ -7,6 +7,8 @@ interface CssExports {
   SVG_path: string;
   SVG_wrapper: string;
   app: string;
+  darkTheme: string;
+  lightTheme: string;
   view: string;
 }
 export const cssExports: CssExports;

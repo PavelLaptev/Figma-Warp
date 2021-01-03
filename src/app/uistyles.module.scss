@@ -1,16 +1,18 @@
+@import "./styles/mixins";
+
 .wrapper {
+  z-index: 10;
   position: absolute;
   z-index: 999;
   bottom: 16px;
   right: 16px;
 
   display: flex;
-  background: rgba(0, 0, 0, 0.1);
 }
 
 .settings {
   position: absolute;
-  bottom: 40px;
+  bottom: 48px;
   right: 0;
 
   display: flex;
@@ -24,6 +26,8 @@
 
 .header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   h4 {
     padding: 8px;
     margin: 0;
@@ -32,5 +36,42 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--primary-clr);
+  }
+}
+
+.button {
+  @include button;
+  svg {
+    fill: var(--space-clr);
+  }
+  &_active {
+    background-color: var(--space-clr);
+    svg {
+      fill: var(--primary-clr);
+    }
+  }
+}
+
+.settingsIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.closeButton {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  &::before {
+    content: "";
+    position: absolute;
+    display: block;
+    top: 14px;
+    left: 8px;
+    width: 16px;
+    height: 2px;
+    background-color: var(--primary-clr);
+  }
+  &:hover {
+    background-color: var(--block-hover);
   }
 }
