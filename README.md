@@ -2,53 +2,22 @@
 
 ![Plugin preview](cover.png)
 
-## 👉🏾 [DOWNLOAD PLUGIN](https://www.figma.com/community/plugin/914972720109480252/Image-Editor)
+## 👉🏾 [DOWNLOAD PLUGIN](https://www.figma.com/community/plugin/923820065156924054/Warp-It)
 
 ---
 
--   Manipulate image with many different color adjustments and filters.
--   Save and load your own presets
--   Plugin takes and keeps the original resolution of the image.
+A simple plugin that allows you to warp 🌀, bend, and distort vector shapes.
+
+### Features
+
+- Grid complexity
+- Interpolation levels
+- Live changes
 
 ---
 
-### 📺 [Demo video on YouTube](https://youtu.be/9dKERyUiT1c)
+### 📺 [Demo video on YouTube](https://youtu.be/QCHnaXQDLvY)
 
 ---
 
-### 🎨 Color adjustments:
-
--   Brightness
--   Contrast
--   Hue
--   Channels
--   Exposure
--   Gamma
--   Vibrance
--   Tint
-
-### 🚥 Filters:
-
--   Invert
--   Mirror
--   Noise
--   Color Halftone
--   Monochrome Halftone
--   Blur
--   Lens blur
--   Sharp
-
----
-
-#### 💥 Upcoming features:
-
--   Show changed values
--   Bulge / Pinch warp
--   Swirl
--   Ink
--   Edge Work
--   Hexagonal Pixelate
-
----
-
-#### 💸 If you want to support [the next release](https://www.paypal.com/paypalme/pavellaptev)
+#### 💸 If you want [to support the plugin](https://www.paypal.com/paypalme/pavellaptev)
