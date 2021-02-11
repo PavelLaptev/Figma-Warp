@@ -4,16 +4,24 @@ import PanZoomprovider from "./PanZoomProvider";
 interface Props {
   children?: any;
   panSpeedRatio?: number;
+  zoomFactor?: {
+    max: number;
+    min: number;
+  };
+  test?: boolean;
 }
 
 interface RefObject {
   getScale: (val) => void;
 }
 
-const round = (num, decimalPlaces = 0) => {
-  let p = Math.pow(10, decimalPlaces);
-  let m = num * p * (1 + Number.EPSILON);
-  return Math.round(m) / p;
+const tetsModeStyles = {
+  wrapper: {
+    background: "rgba(0,0,0,0.1)"
+  },
+  container: {
+    border: "3px solid #0044ff"
+  }
 };
 
 const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
@@ -21,13 +29,28 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
   const [mouseKeyIsDown, setMouseKeyIsDown] = React.useState(false);
   const [transform, setTransform] = React.useState({ scale: 1, x: 0, y: 0 });
 
+  const returnZoomMinOrMax = () => {
+    let correctionIndex = 0.05;
+    if (transform.scale < props.zoomFactor.min) {
+      setTransform({
+        ...transform,
+        scale: props.zoomFactor.min + correctionIndex
+      });
+    }
+    if (transform.scale > props.zoomFactor.max) {
+      setTransform({
+        ...transform,
+        scale: props.zoomFactor.max - correctionIndex
+      });
+    }
+  };
+
   React.useImperativeHandle(ref, () => ({
     getScale() {
       return transform.scale;
     }
   }));
 
-  // HANDLE ON MOUSE WHEEL (FOR TOUCHBAR)
   const handleOnWheel = (e: any) => {
     // DETECT PAN
     if (e.deltaX !== 0 || e.deltaY !== 0) {
@@ -39,23 +62,12 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
     }
 
     // DETECT PINCH
-    if (e.ctrlKey) {
-      if (transform.scale > 0.4 && transform.scale < 2) {
-        setTransform(prevState => ({
-          ...transform,
-          scale: round(prevState.scale - e.deltaY / 100, 3)
-        }));
-      } else if (transform.scale <= 0.4) {
-        setTransform({
-          ...transform,
-          scale: 0.41
-        });
-      } else if (transform.scale >= 2) {
-        setTransform({
-          ...transform,
-          scale: 1.95
-        });
-      }
+    if (e.ctrlKey || e.metaKey) {
+      setTransform(prevState => ({
+        ...transform,
+        scale: prevState.scale - e.deltaY / 100
+      }));
+      returnZoomMinOrMax();
     }
   };
 
@@ -73,14 +85,52 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
   };
 
   // ON SPACE PRESSED
-  const handleOnKeyDown = (e: any) => {
+  const handleOnKeyDown = e => {
+    // IF SPACE PRESSED
     if (e.keyCode === 32) {
       setSpacePressed(true);
+    }
+
+    // PLUS/MINUS KEYS
+    let zoomIndex = 0.5;
+
+    // IF MINUS PRESSED
+    if (
+      e.keyCode === 189 &&
+      transform.scale > props.zoomFactor.min &&
+      transform.scale < props.zoomFactor.max
+    ) {
+      setTransform(prevState => ({
+        ...transform,
+        scale: prevState.scale - zoomIndex
+      }));
+    }
+
+    // IF PLUS PRESSED
+    if (
+      e.keyCode === 187 &&
+      transform.scale > props.zoomFactor.min &&
+      transform.scale < props.zoomFactor.max
+    ) {
+      setTransform(prevState => ({
+        ...transform,
+        scale: prevState.scale + zoomIndex
+      }));
+    }
+
+    // IF ZERO PRESSED
+    if (e.keyCode === 48) {
+      setTransform({
+        x: 0,
+        y: 0,
+        scale: 1
+      });
     }
   };
 
   const handleOnKeyUp = () => {
     setSpacePressed(false);
+    returnZoomMinOrMax();
   };
 
   // ON MOUSE PRESSED
@@ -98,14 +148,10 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
 
   // USE EFFECT
   React.useEffect(() => {
-    document.addEventListener("keydown", handleOnKeyDown, false);
-    document.addEventListener("keyup", handleOnKeyUp, false);
     document.addEventListener("mousedown", handleOnKeyMouseDown, false);
     document.addEventListener("mouseup", handleOnKeyMouseUp, false);
 
     return () => {
-      document.removeEventListener("keydown", handleOnKeyDown, false);
-      document.removeEventListener("keyup", handleOnKeyUp, false);
       document.removeEventListener("mousedown", handleOnKeyMouseDown, false);
       document.removeEventListener("mouseup", handleOnKeyMouseUp, false);
     };
@@ -116,17 +162,22 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
       <div
         id="pan-zoom-wrapper"
         style={{
+          ...(props.test ? tetsModeStyles.wrapper : {}),
+          outline: "none",
           overflow: "hidden",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          position: "relative",
           background: "var(--canvas-clr)",
           width: "100%",
-          height: "100%"
+          height: "100%",
+          cursor: spacePressed ? "grab" : "auto"
         }}
         onWheel={handleOnWheel}
         onMouseMove={handleOnMouseMove}
+        onKeyDown={handleOnKeyDown}
+        onKeyUp={handleOnKeyUp}
+        tabIndex={0}
       >
         <div
           ref={ref as any}
@@ -135,7 +186,7 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
           data-pos-x={transform.x}
           data-pos-y={transform.y}
           style={{
-            // border: "3px solid #0044ff",
+            ...(props.test ? tetsModeStyles.container : {}),
             width: "fit-content",
             height: "fit-content",
             transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`
@@ -149,7 +200,12 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
 });
 
 PanZoom.defaultProps = {
-  panSpeedRatio: 1.4
+  panSpeedRatio: 1.4,
+  test: false,
+  zoomFactor: {
+    max: 3,
+    min: 0.3
+  }
 } as Partial<Props>;
 
 export default PanZoom;
