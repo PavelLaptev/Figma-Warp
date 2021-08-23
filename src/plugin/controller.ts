@@ -23,21 +23,31 @@ const getSVG = async node => {
 const init = async () => {
   let node = figma.currentPage.selection[0];
 
-  if (node && node.type === "VECTOR") {
-    log.check("Shape selected");
+  if (node) {
+    if (
+      node.type === "VECTOR" ||
+      node.type === "TEXT" ||
+      node.type === "RECTANGLE" ||
+      node.type === "ELLIPSE" ||
+      node.type === "POLYGON" ||
+      node.type === "STAR" ||
+      node.type === "LINE"
+    ) {
+      log.check("Shape selected");
 
-    let node = figma.currentPage.selection[0];
+      let node = figma.currentPage.selection[0];
 
-    figma.ui.postMessage({
-      type: "svg-from-figma",
-      data: await getSVG(node)
-    });
-  } else if (node && node.type !== "VECTOR") {
-    figma.ui.postMessage({
-      type: "svg-from-figma",
-      event: "error"
-    });
-    log.warn("convert element to vector type");
+      figma.ui.postMessage({
+        type: "svg-from-figma",
+        data: await getSVG(node)
+      });
+    } else {
+      figma.ui.postMessage({
+        type: "svg-from-figma",
+        event: "error"
+      });
+      log.warn("convert element to vector type");
+    }
   } else {
     figma.ui.postMessage({
       type: "svg-from-figma",
@@ -60,18 +70,28 @@ figma.on("selectionchange", () => {
 });
 
 figma.ui.onmessage = async msg => {
-  let node = figma.currentPage.selection[0] as VectorNode;
+  let selectedNode = figma.currentPage.selection[0] as VectorNode;
 
   if (msg.type === "settings-changes") {
     init();
   }
 
-  if (msg.type === "warped-svg" && node) {
+  if (msg.type === "warped-svg" && selectedNode) {
     let nodeFromSVG = figma.createNodeFromSvg(msg.data);
 
-    node.vectorPaths = figma.flatten(nodeFromSVG.children).vectorPaths;
+    let flatten = figma.flatten(nodeFromSVG.children);
+    selectedNode.parent.appendChild(flatten);
+
+    flatten.x = selectedNode.x;
+    flatten.y = selectedNode.y;
+    flatten.name = selectedNode.name;
+
+    figma.currentPage.selection = [flatten];
+
     nodeFromSVG.remove();
-  } else if (msg.type === "warped-svg" && !node) {
+
+    selectedNode.remove();
+  } else if (msg.type === "warped-svg" && !selectedNode) {
     log.error("Select some vector shape");
   }
 };
