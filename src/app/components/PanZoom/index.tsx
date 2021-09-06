@@ -9,6 +9,7 @@ interface Props {
     min: number;
   };
   test?: boolean;
+  zoomScale?: number;
 }
 
 interface RefObject {
@@ -27,7 +28,11 @@ const tetsModeStyles = {
 const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
   const [spacePressed, setSpacePressed] = React.useState(false);
   const [mouseKeyIsDown, setMouseKeyIsDown] = React.useState(false);
-  const [transform, setTransform] = React.useState({ scale: 1, x: 0, y: 0 });
+  const [transform, setTransform] = React.useState({
+    scale: props.zoomScale,
+    x: 0,
+    y: 0
+  });
 
   const returnZoomMinOrMax = () => {
     let correctionIndex = 0.05;
@@ -202,6 +207,7 @@ const PanZoom = React.forwardRef((props: Props, ref: React.Ref<RefObject>) => {
 PanZoom.defaultProps = {
   panSpeedRatio: 1.4,
   test: false,
+  zoomScale: 1,
   zoomFactor: {
     max: 3,
     min: 0.3

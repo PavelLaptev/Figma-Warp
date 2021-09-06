@@ -3,6 +3,7 @@ import appstyles from "./app.module.scss";
 import uistyles from "./uistyles.module.scss";
 import placeholderSVG from "./assets/placeholderSVG";
 import PanZoom from "./components/PanZoom/";
+import PanZoomprovider from "./components/PanZoom/PanZoomProvider";
 import Warp from "warpjs";
 import {
   createPointsArray,
@@ -31,7 +32,6 @@ const App = ({}) => {
   const SVGControlDots = React.useRef(null);
   //
   const panZommRef = React.useRef(null);
-  const realTimeChangesRef = React.useRef(null);
 
   ////////////////////////////////////////////////////////////////
   //////////////////////////// STATES ////////////////////////////
@@ -49,7 +49,6 @@ const App = ({}) => {
 
   const [complexity, setComplexity] = React.useState(2);
   const [Interpolation, setInterpolation] = React.useState(1);
-  const [realtimeChanges, setRealtimeChanges] = React.useState(false);
   const [darkThemeState, setDarkThemeState] = React.useState(false);
   const [showSettingsState, setShowSettingsState] = React.useState(false);
 
@@ -57,7 +56,6 @@ const App = ({}) => {
   ////////////////////////// USE EFFECT //////////////////////////
   ///////////////////////////////////////////////////////////////
   React.useEffect(() => {
-    // panZommRef.current.getTransform();
     // Check if we recieve Figma's SVG
     onmessage = event => {
       if (event.data.pluginMessage.type === "svg-from-figma") {
@@ -121,27 +119,33 @@ const App = ({}) => {
         [...SVGControlDots.current.childNodes].map((item, i) => {
           Draggable.create(item, {
             type: "x,y",
+            onDragEnd: function() {
+              this.lockAxis = false;
+            },
             onDrag: function() {
-              let relativeX =
-                (this.pointerX -
-                  SVGContainerRef.current.getBoundingClientRect().left) /
+              this.lockAxis = this.pointerEvent.shiftKey;
+
+              const dragEl = this.target.getBoundingClientRect();
+              const dragElHalfWidth = dragEl.width / 2;
+
+              const dragPointX =
+                (dragEl.x -
+                  SVGContainerRef.current.getBoundingClientRect().left +
+                  dragElHalfWidth) /
                 panZommRef.current.getScale();
-              let relativeY =
-                (this.pointerY -
-                  SVGContainerRef.current.getBoundingClientRect().top) /
+              const dragPointY =
+                (dragEl.y -
+                  SVGContainerRef.current.getBoundingClientRect().top +
+                  dragElHalfWidth) /
                 panZommRef.current.getScale();
-              points[i] = [relativeX, relativeY];
+
+              points[i] = [dragPointX, dragPointY];
 
               warpReposition(warp, points);
               updateControlPath(SVGControlPath, points);
-
-              realTimeChangesRef.current.checked
-                ? sendPaths(warp.element)
-                : false;
             }
           });
         });
-        //////////////////////////////////////////
       }
     };
   }, [SVGfromFigma, complexity, Interpolation]);
@@ -165,10 +169,6 @@ const App = ({}) => {
 
   const handleInterpolation = (e, setState) => {
     handleSettingsChanged(e.target.value, setState);
-  };
-
-  const handleRealtimeChanges = e => {
-    setRealtimeChanges(e.target.checked);
   };
 
   const applyResults = () => {
@@ -224,23 +224,12 @@ const App = ({}) => {
               setDarkThemeState(e.target.checked);
             }}
           />
-          <Toggler
-            name={"realtime-changes"}
-            label={"Realtime changes"}
-            ref={realTimeChangesRef}
-            checked={realtimeChanges}
-            onChange={handleRealtimeChanges}
-            msg={
-              "⚠ The plugin will reflect all changes in real-time. Complex shapes could cause low performance."
-            }
-          />
         </section>
         <button
           onClick={applyResults}
           className={uistyles.button}
           style={{
-            marginRight: "6px",
-            display: realtimeChanges ? "none" : "block"
+            marginRight: "6px"
           }}
         >
           Apply results
@@ -273,56 +262,60 @@ const App = ({}) => {
   //////////////////////////// RENDER ////////////////////////////
   ////////////////////////////////////////////////////////////////
   return (
-    <div
-      className={`${appstyles.app} ${
-        darkThemeState ? appstyles.darkTheme : appstyles.lightTheme
-      }`}
-      key={appKey}
-    >
-      <UIcontrols />
-      <PanZoom ref={panZommRef}>
-        <section className={appstyles.view}>
-          <div
-            className={appstyles.SVG_wrapper}
-            ref={SVGContainerRef}
-            style={{
-              width: `${SVGfromFigma.currentSize.width}px`,
-              height: `${SVGfromFigma.currentSize.height}px`
-            }}
-          >
-            <div
-              ref={SVGControlDots}
-              className={appstyles.SVG_dotsContainer}
-              id="svg-dot-container"
-            >
-              {SVGfromFigma.points.map((item, i) => {
-                return (
-                  <ControlDot
-                    key={`dot-${i}`}
-                    position={{ x: item[0], y: item[1] }}
+    <PanZoomprovider.Consumer>
+      {scale => (
+        <div
+          className={`${appstyles.app} ${
+            darkThemeState ? appstyles.darkTheme : appstyles.lightTheme
+          }`}
+        >
+          <UIcontrols />
+          <PanZoom ref={panZommRef} zoomScale={scale}>
+            <section className={appstyles.view}>
+              <div
+                className={appstyles.SVG_wrapper}
+                ref={SVGContainerRef}
+                style={{
+                  width: `${SVGfromFigma.currentSize.width}px`,
+                  height: `${SVGfromFigma.currentSize.height}px`
+                }}
+                key={appKey}
+              >
+                <div
+                  ref={SVGControlDots}
+                  className={appstyles.SVG_dotsContainer}
+                  id="svg-dot-container"
+                >
+                  {SVGfromFigma.points.map((item, i) => {
+                    return (
+                      <ControlDot
+                        key={`dot-${i}`}
+                        position={{ x: item[0], y: item[1] }}
+                      />
+                    );
+                  })}
+                </div>
+
+                <svg
+                  className={appstyles.SVG_container}
+                  viewBox={SVGfromFigma.viewbox}
+                  ref={SVGElementRef}
+                  dangerouslySetInnerHTML={{ __html: SVGfromFigma.htmlString }}
+                />
+
+                <svg className={appstyles.SVG_controlPath}>
+                  <path
+                    ref={SVGControlPath}
+                    id="control-path"
+                    className={appstyles.SVG_path}
                   />
-                );
-              })}
-            </div>
-
-            <svg
-              className={appstyles.SVG_container}
-              viewBox={SVGfromFigma.viewbox}
-              ref={SVGElementRef}
-              dangerouslySetInnerHTML={{ __html: SVGfromFigma.htmlString }}
-            />
-
-            <svg className={appstyles.SVG_controlPath}>
-              <path
-                ref={SVGControlPath}
-                id="control-path"
-                className={appstyles.SVG_path}
-              />
-            </svg>
-          </div>
-        </section>
-      </PanZoom>
-    </div>
+                </svg>
+              </div>
+            </section>
+          </PanZoom>
+        </div>
+      )}
+    </PanZoomprovider.Consumer>
   );
 };
 
